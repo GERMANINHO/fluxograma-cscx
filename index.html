@@ -3,50 +3,91 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Hub de Fluxos — Sidebar com Flyout</title>
+<title>Hub de Fluxos — Sankhya</title>
 
 <!-- Ionicons v2 (ícones) -->
 <link rel="stylesheet" href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">
 
 <style>
-  :root{ --sidebar:#19222a; --sidebar-dark:#080D11; --header:#09f; --text:#fff; }
-  *{box-sizing:border-box}
-  html,body{height:100%}
-  body{ margin:0; font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif; background:#fefefe; color:#111; }
-
-  .app{min-height:100vh}
-  .sidebar{ position:fixed; inset:0 auto 0 0; width:17em; background:var(--sidebar); color:var(--text); overflow:hidden; }
-  .sidebar header{ background:var(--header); padding:12px 16px; font-weight:700; }
-
-  .sidebar-nav{ position:relative; height:calc(100vh - 44px); overflow-y:auto; padding-bottom:96px; }
-  .sidebar-nav ul{list-style:none; margin:0; padding:0}
-  .sidebar-nav > ul > li{position:relative}
-  .sidebar-nav a{ display:block; color:rgba(255,255,255,.9); font-size:.95rem; line-height:1; padding:16px; position:relative; transition:background .25s ease; }
-  .sidebar-nav a:hover{ background:rgba(0,0,0,.9) }
-  .sidebar-nav i{ font-size:1.35rem; margin-right:.6rem; vertical-align:middle; width:1.35rem; }
-
-  .sidebar-nav > ul > li > a::after{
-    content:"\f125"; font-family:ionicons; position:absolute; right:.75rem; top:50%;
-    transform:translateY(-50%); font-size:.75rem; color:#fff; opacity:.9;
+  :root{
+    --sidebar:#19222a;
+    --header:#09f;
+    --text:#fff;
+    --content-bg:#fefefe;
   }
 
-  .nav-flyout{ position:absolute; top:0; left:100%; width:17em; height:100vh; background:var(--sidebar-dark);
-               transform:translateX(100%); transition:transform .35s ease; z-index:9; }
-  .nav-flyout a{padding:16px}
-  .nav-flyout a:hover{background:rgba(255,255,255,.05)}
-  .sidebar-nav > ul > li:hover > .nav-flyout, .sidebar-nav > ul > li.open > .nav-flyout{ transform:translateX(0); }
+  *{box-sizing:border-box}
+  html,body{height:100%}
+  body{
+    margin:0;
+    font-family: system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;
+    background:var(--content-bg);
+    color:#111;
+  }
 
-  .content{ margin-left:17em; min-height:100vh; padding:24px; }
-  .visually-hidden{ position:absolute!important; height:1px;width:1px; overflow:hidden; clip:rect(1px,1px,1px,1px); white-space:nowrap; }
+  .app{min-height:100vh}
 
-  .hero{ display:flex; align-items:center; justify-content:center; min-height:calc(100vh - 48px); padding:24px; }
-  .hero img{ max-width:min(100%, 1100px); height:auto; display:block; }
+  /* Sidebar */
+  .sidebar{
+    position:fixed; inset:0 auto 0 0;
+    width:17em; background:var(--sidebar); color:var(--text);
+    overflow:hidden;
+  }
+  .sidebar header{
+    background:var(--header);
+    padding:12px 16px;
+    font-weight:700;
+  }
 
+  .sidebar-nav{ height:calc(100vh - 44px); overflow:auto; }
+  .sidebar-nav ul{list-style:none; margin:0; padding:0}
+  .sidebar-nav li{ border-bottom:1px solid rgba(255,255,255,.04); }
+
+  .nav-label{
+    display:flex; align-items:center; gap:.6rem;
+    color:rgba(255,255,255,.92);
+    padding:16px;
+    font-size:.98rem;
+    line-height:1;
+    cursor:default;               /* sem ação de clique */
+    user-select:none;
+  }
+  .nav-label i{ font-size:1.35rem; width:1.35rem }
+
+  /* remove chevron/hover e desabilita ponteiro */
+  .nav-label:hover{ background:transparent }
+  .nav-label::after{ content:none !important }
+
+  /* Conteúdo */
+  .content{
+    margin-left:17em;
+    min-height:100vh;
+    padding:24px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+  }
+
+  /* Hero: imagem grande e centralizada */
+  .hero{
+    width:100%;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+  }
+  .hero img{
+    /* cresce até preencher bem a área, mantendo proporção */
+    width:min(95%, 1400px);
+    max-height:85vh;
+    height:auto;
+    display:block;
+  }
+
+  /* Scroll fino na barra lateral (opcional) */
   .sidebar-nav{scrollbar-width:thin; scrollbar-color:#465462 transparent}
   .sidebar-nav::-webkit-scrollbar{width:8px}
   .sidebar-nav::-webkit-scrollbar-thumb{background:#465462;border-radius:8px}
   .sidebar-nav::-webkit-scrollbar-track{background:transparent}
-  .sidebar-nav a:focus{ outline:2px solid #7dd3fc; outline-offset:-2px; background:rgba(255,255,255,.06); }
 </style>
 </head>
 <body>
@@ -54,80 +95,28 @@
 <section class="app">
   <aside class="sidebar">
     <header>Menu</header>
-
     <nav class="sidebar-nav">
       <ul>
-        <!-- Fluxo Pendencias -->
         <li>
-          <a href="#"><i class="ion-bag"></i> <span>Fluxo Pendencias</span></a>
-          <ul class="nav-flyout">
-            <li><a href="#"><i class="ion-ios-color-filter-outline"></i>Atalho 1</a></li>
-            <li><a href="#"><i class="ion-ios-clock-outline"></i>Atalho 2</a></li>
-            <li><a href="#"><i class="ion-android-star-outline"></i>Atalho 3</a></li>
-            <li><a href="#"><i class="ion-heart-broken"></i>Atalho 4</a></li>
-          </ul>
+          <span class="nav-label"><i class="ion-bag"></i> Fluxo Pendencias</span>
         </li>
-
-        <!-- Fluxo Eventos -->
         <li>
-          <a href="#"><i class="ion-ios-settings"></i> <span>Fluxo Eventos</span></a>
-          <ul class="nav-flyout">
-            <li><a href="#"><i class="ion-ios-alarm-outline"></i>Agenda</a></li>
-            <li><a href="#"><i class="ion-ios-camera-outline"></i>Relatórios</a></li>
-            <li><a href="#"><i class="ion-ios-chatboxes-outline"></i>Comunicados</a></li>
-            <li><a href="#"><i class="ion-ios-cog-outline"></i>Configurações</a></li>
-          </ul>
+          <span class="nav-label"><i class="ion-ios-settings"></i> Fluxo Eventos</span>
         </li>
-
-        <!-- Graficos -->
         <li>
-          <a href="#"><i class="ion-ios-analytics-outline"></i> <span>Graficos</span></a>
-          <ul class="nav-flyout">
-            <li><a href="#"><i class="ion-ios-timer-outline"></i>Tempo</a></li>
-            <li><a href="#"><i class="ion-arrow-graph-down-left"></i>Performance</a></li>
-            <li><a href="#"><i class="ion-ios-partlysunny-outline"></i>Previsões</a></li>
-            <li><a href="#"><i class="ion-ios-timer-outline"></i>Comparativos</a></li>
-            <li><a href="#"><i class="ion-ios-game-controller-a-outline"></i>Outros</a></li>
-          </ul>
+          <span class="nav-label"><i class="ion-ios-analytics-outline"></i> Gráficos</span>
         </li>
-        <!-- Removidos: Folio, Papers, Ass Finder, Cocaine -->
       </ul>
     </nav>
   </aside>
 
   <main class="content">
-    <h1 class="visually-hidden">Hub de Fluxos</h1>
     <div class="hero">
-      <!-- Imagem na raiz do repositório -->
-      <img src="imagem-sankhya-adquiridas.png" alt="Sankhya e Adquiridas — Hub" loading="lazy">
-      <!-- Se a extensão for diferente, ajuste para .jpg/.jpeg/.webp conforme o arquivo -->
+      <!-- Coloque a imagem na raiz do repositório com este nome -->
+      <img src="imagem-sankhya-adquiridas.png" alt="Sankhya e adquiridas">
     </div>
   </main>
 </section>
-
-<script>
-  // Abre/fecha o flyout no clique (touch). No desktop, hover já funciona.
-  const topLevelLinks = document.querySelectorAll('.sidebar-nav > ul > li > a');
-  topLevelLinks.forEach(a => {
-    a.addEventListener('click', (e) => {
-      const li = a.parentElement;
-      const already = li.classList.contains('open');
-      document.querySelectorAll('.sidebar-nav > ul > li.open').forEach(el => el.classList.remove('open'));
-      if (!already) li.classList.add('open');
-      if (a.getAttribute('href') === '#') e.preventDefault();
-    });
-  });
-  document.addEventListener('click', (e) => {
-    if (!e.target.closest('.sidebar')) {
-      document.querySelectorAll('.sidebar-nav > ul > li.open').forEach(el => el.classList.remove('open'));
-    }
-  });
-  document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape') {
-      document.querySelectorAll('.sidebar-nav > ul > li.open').forEach(el => el.classList.remove('open'));
-    }
-  });
-</script>
 
 </body>
 </html>
