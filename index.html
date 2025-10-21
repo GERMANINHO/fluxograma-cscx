@@ -43,20 +43,27 @@
   .sidebar-nav ul{list-style:none; margin:0; padding:0}
   .sidebar-nav li{ border-bottom:1px solid rgba(255,255,255,.04); }
 
+  /* Link clicável (apenas Fluxo Pendencias) */
+  .nav-link{
+    display:flex; align-items:center; gap:.6rem;
+    color:rgba(255,255,255,.92);
+    padding:16px;
+    font-size:.98rem; line-height:1;
+    text-decoration:none;
+    transition:background .2s ease;
+  }
+  .nav-link i{ font-size:1.35rem; width:1.35rem }
+  .nav-link:hover{ background:rgba(255,255,255,.06) }
+
+  /* Rótulos sem ação (Eventos, Gráficos) */
   .nav-label{
     display:flex; align-items:center; gap:.6rem;
     color:rgba(255,255,255,.92);
     padding:16px;
-    font-size:.98rem;
-    line-height:1;
-    cursor:default;               /* sem ação de clique */
-    user-select:none;
+    font-size:.98rem; line-height:1;
+    cursor:default; user-select:none;
   }
   .nav-label i{ font-size:1.35rem; width:1.35rem }
-
-  /* remove chevron/hover e desabilita ponteiro */
-  .nav-label:hover{ background:transparent }
-  .nav-label::after{ content:none !important }
 
   /* Conteúdo */
   .content{
@@ -76,11 +83,9 @@
     justify-content:center;
   }
   .hero img{
-    /* cresce até preencher bem a área, mantendo proporção */
-    width:min(95%, 1400px);
-    max-height:85vh;
-    height:auto;
-    display:block;
+    width:min(95%, 1400px);   /* ocupa bem a largura */
+    max-height:85vh;          /* respeita a altura da tela */
+    height:auto; display:block;
   }
 
   /* Scroll fino na barra lateral (opcional) */
@@ -98,7 +103,9 @@
     <nav class="sidebar-nav">
       <ul>
         <li>
-          <span class="nav-label"><i class="ion-bag"></i> Fluxo Pendencias</span>
+          <a class="nav-link" href="https://germaninho.github.io/fluxo-pendencias-cscx-sankhya-abc-paulista/">
+            <i class="ion-bag"></i> Fluxo Pendencias
+          </a>
         </li>
         <li>
           <span class="nav-label"><i class="ion-ios-settings"></i> Fluxo Eventos</span>
@@ -112,7 +119,7 @@
 
   <main class="content">
     <div class="hero">
-      <!-- Coloque a imagem na raiz do repositório com este nome -->
+      <!-- Imagem na raiz do repositório -->
       <img src="imagem-sankhya-adquiridas.png" alt="Sankhya e adquiridas">
     </div>
   </main>
