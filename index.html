@@ -32,6 +32,8 @@
     position:fixed; inset:0 auto 0 0;
     width:17em; background:var(--sidebar); color:var(--text);
     overflow:hidden;
+    display:flex;
+    flex-direction:column;
   }
   .sidebar header{
     background:var(--header);
@@ -39,11 +41,44 @@
     font-weight:700;
   }
 
-  .sidebar-nav{ height:calc(100vh - 44px); overflow:auto; }
+  /* Barra de pesquisa */
+  .sidebar-search{
+    padding:8px 12px;
+    background:#111a22;
+    border-bottom:1px solid rgba(255,255,255,.05);
+  }
+  .sidebar-search-inner{
+    display:flex;
+    align-items:center;
+    gap:.5rem;
+    background:rgba(0,0,0,.25);
+    padding:4px 10px;
+    border-radius:999px;
+  }
+  .sidebar-search-inner i{
+    font-size:1.1rem;
+    opacity:.75;
+  }
+  .sidebar-search input{
+    border:none;
+    outline:none;
+    background:transparent;
+    color:var(--text);
+    font-size:.85rem;
+    width:100%;
+  }
+  .sidebar-search input::placeholder{
+    color:rgba(255,255,255,.55);
+  }
+
+  .sidebar-nav{
+    flex:1;
+    overflow:auto;
+  }
   .sidebar-nav ul{list-style:none; margin:0; padding:0}
   .sidebar-nav li{ border-bottom:1px solid rgba(255,255,255,.04); }
 
-  /* Link clicável (apenas Fluxo Pendencias) */
+  /* Link clicável */
   .nav-link{
     display:flex; align-items:center; gap:.6rem;
     color:rgba(255,255,255,.92);
@@ -100,11 +135,25 @@
 <section class="app">
   <aside class="sidebar">
     <header>Menu</header>
+
+    <!-- Barra de pesquisa -->
+    <div class="sidebar-search">
+      <div class="sidebar-search-inner">
+        <i class="ion-search"></i>
+        <input id="nav-search" type="text" placeholder="Pesquisar fluxos..." />
+      </div>
+    </div>
+
     <nav class="sidebar-nav">
       <ul>
         <li>
           <a class="nav-link" href="https://germaninho.github.io/fluxo-pendencias-cscx-sankhya-abc-paulista/">
             <i class="ion-bag"></i> Fluxo Pendencias
+          </a>
+        </li>
+        <li>
+          <a class="nav-link" href="nps-blitz.html">
+            <i class="ion-ios-pulse-strong"></i> NPS Blitz
           </a>
         </li>
         <li>
@@ -124,6 +173,24 @@
     </div>
   </main>
 </section>
+
+<script>
+  (function(){
+    var searchInput = document.getElementById('nav-search');
+    if (!searchInput) return;
+
+    var items = document.querySelectorAll('.sidebar-nav li');
+
+    searchInput.addEventListener('input', function(){
+      var q = this.value.trim().toLowerCase();
+
+      Array.prototype.forEach.call(items, function(li){
+        var text = li.textContent.toLowerCase();
+        li.style.display = (!q || text.indexOf(q) !== -1) ? '' : 'none';
+      });
+    });
+  })();
+</script>
 
 </body>
 </html>
