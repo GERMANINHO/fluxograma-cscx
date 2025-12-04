@@ -89,11 +89,15 @@
     line-height:1.1;
     text-decoration:none;
     transition:background .2s ease;
-    min-height:56px;           /* garante mesma altura visual */
+    min-height:56px;           /* mesma altura entre as abas */
     box-sizing:border-box;
   }
   .nav-link i{ font-size:1.35rem; width:1.35rem }
   .nav-link:hover{ background:rgba(255,255,255,.06) }
+
+  .nav-text{
+    flex:1; /* ocupa o meio e empurra a seta para a direita */
+  }
 
   /* Botão de toggle do submenu (usa o mesmo visual da nav-link) */
   .nav-toggle{
@@ -103,6 +107,8 @@
     padding:0;
     text-align:left;
     cursor:pointer;
+    font: inherit;
+    color: inherit;
   }
 
   .nav-toggle .sub-arrow{
@@ -128,7 +134,7 @@
   .nav-link--sub{
     padding:12px 16px 12px 40px;
     font-size:.9rem;
-    min-height:auto;      /* sub-botões podem ser mais baixinhos */
+    min-height:auto;      /* sub-botões podem ser menores */
   }
 
   /* Rótulos sem ação (Eventos) */
@@ -192,7 +198,8 @@
         <!-- Fluxo AE -->
         <li>
           <a class="nav-link" href="https://germaninho.github.io/fluxo-ae-cscx-sankhya-abc-paulista/">
-            <i class="ion-ios-analytics"></i> Fluxo AE
+            <i class="ion-ios-analytics"></i>
+            <span class="nav-text">Fluxo AE</span>
           </a>
         </li>
 
@@ -200,7 +207,7 @@
         <li class="has-sub">
           <button class="nav-link nav-toggle" type="button">
             <i class="ion-ios-pulse-strong"></i>
-            <span>Fluxo Blitz NPS</span>
+            <span class="nav-text">Fluxo Blitz NPS</span>
             <i class="ion-chevron-right sub-arrow"></i>
           </button>
 
@@ -224,21 +231,24 @@
         <!-- Fluxo Case -->
         <li>
           <a class="nav-link" href="https://germaninho.github.io/fluxo-case-cscx-sankhya-abc-paulista/">
-            <i class="ion-document-text"></i> Fluxo Case
+            <i class="ion-document-text"></i>
+            <span class="nav-text">Fluxo Case</span>
           </a>
         </li>
 
         <!-- Fluxo Certificação -->
         <li>
           <a class="nav-link" href="https://germaninho.github.io/fluxo-certificacao-cscx-sankhya-abc-paulista/">
-            <i class="ion-ribbon-b"></i> Fluxo Certificação
+            <i class="ion-ribbon-b"></i>
+            <span class="nav-text">Fluxo Certificação</span>
           </a>
         </li>
 
         <!-- Fluxo de Usuários Temporários -->
         <li>
           <a class="nav-link" href="https://germaninho.github.io/fluxo-usuarios-temporarios-cscx-sankhya-abc-paulista/">
-            <i class="ion-person-stalker"></i> Fluxo de Usuários Temporários
+            <i class="ion-person-stalker"></i>
+            <span class="nav-text">Fluxo de Usuários Temporários</span>
           </a>
         </li>
 
@@ -254,28 +264,32 @@
           <a class="nav-link"
              href="https://docs.google.com/spreadsheets/d/1PNy9G4HqGH_rUAWJum4P1tJIG3ux3lnaion2uCsahpk/edit?gid=0#gid=0"
              target="_blank" rel="noopener noreferrer">
-            <i class="ion-stats-bars"></i> Fluxo Indicadores da Campanha Consultor e Coordenador de Sucesso do Cliente
+            <i class="ion-stats-bars"></i>
+            <span class="nav-text">Fluxo Indicadores da Campanha Consultor e Coordenador de Sucesso do Cliente</span>
           </a>
         </li>
 
         <!-- Fluxo Licenciamento de Empresas -->
         <li>
           <a class="nav-link" href="https://germaninho.github.io/fluxo-os-revops-sankhya-abc-paulista/">
-            <i class="ion-thermometer"></i> Fluxo Licenciamento de Empresas
+            <i class="ion-thermometer"></i>
+            <span class="nav-text">Fluxo Licenciamento de Empresas</span>
           </a>
         </li>
 
         <!-- Fluxo Passagem de Bastão - Implantação > Base -->
         <li>
           <a class="nav-link" href="https://germaninho.github.io/fluxo-passagem-bastao-implantacao-base-cscx-sankhya-abc-paulista/">
-            <i class="ion-shuffle"></i> Fluxo Passagem de Bastão - Implantação &gt; Base
+            <i class="ion-shuffle"></i>
+            <span class="nav-text">Fluxo Passagem de Bastão - Implantação &gt; Base</span>
           </a>
         </li>
 
         <!-- Fluxo Pendencias -->
         <li>
           <a class="nav-link" href="https://germaninho.github.io/fluxo-pendencias-cscx-sankhya-abc-paulista/">
-            <i class="ion-bag"></i> Fluxo Pendencias
+            <i class="ion-bag"></i>
+            <span class="nav-text">Fluxo Pendencias</span>
           </a>
         </li>
       </ul>
