@@ -78,19 +78,21 @@
   .sidebar-nav ul{list-style:none; margin:0; padding:0}
   .sidebar-nav li{ border-bottom:1px solid rgba(255,255,255,.04); }
 
-  /* Link clicável */
+  /* Link clicável (todas as abas têm a mesma altura visual) */
   .nav-link{
-    display:flex; align-items:center; gap:.6rem;
+    display:flex;
+    align-items:center;
+    gap:.6rem;
     color:rgba(255,255,255,.92);
     padding:16px;
-    font-size:.98rem; line-height:1;
+    font-size:.98rem; line-height:1.1;
     text-decoration:none;
     transition:background .2s ease;
   }
   .nav-link i{ font-size:1.35rem; width:1.35rem }
   .nav-link:hover{ background:rgba(255,255,255,.06) }
 
-  /* Botão de toggle do submenu */
+  /* Botão de toggle do submenu (usa o mesmo visual da nav-link) */
   .nav-toggle{
     width:100%;
     background:none;
@@ -121,7 +123,7 @@
   }
 
   .nav-link--sub{
-    padding-left:40px;
+    padding:12px 16px 12px 40px; /* um pouco mais compacto e recuado */
     font-size:.9rem;
   }
 
@@ -153,12 +155,12 @@
     justify-content:center;
   }
   .hero img{
-    width:min(95%, 1400px);   /* ocupa bem a largura */
-    max-height:85vh;          /* respeita a altura da tela */
+    width:min(95%, 1400px);
+    max-height:85vh;
     height:auto; display:block;
   }
 
-  /* Scroll fino na barra lateral (opcional) */
+  /* Scroll fino na barra lateral */
   .sidebar-nav{scrollbar-width:thin; scrollbar-color:#465462 transparent}
   .sidebar-nav::-webkit-scrollbar{width:8px}
   .sidebar-nav::-webkit-scrollbar-thumb{background:#465462;border-radius:8px}
@@ -181,7 +183,7 @@
 
     <nav class="sidebar-nav">
       <ul>
-        <!-- Ordem alfabética das abas/botões (nível principal) -->
+        <!-- Ordem alfabética das abas principais -->
 
         <!-- Fluxo AE -->
         <li>
@@ -200,7 +202,8 @@
 
           <ul class="subnav">
             <li>
-              <a class="nav-link nav-link--sub" href="https://germaninho.github.io/fluxo-nps-blitz-cscx-sankhya-abc-paulista/">
+              <a class="nav-link nav-link--sub"
+                 href="https://germaninho.github.io/fluxo-nps-blitz-cscx-sankhya-abc-paulista/">
                 Fluxo Blitz NPS (Fluxograma)
               </a>
             </li>
@@ -277,7 +280,6 @@
 
   <main class="content">
     <div class="hero">
-      <!-- Imagem na raiz do repositório -->
       <img src="imagem-sankhya-adquiridas.png" alt="Sankhya e adquiridas">
     </div>
   </main>
