@@ -78,16 +78,19 @@
   .sidebar-nav ul{list-style:none; margin:0; padding:0}
   .sidebar-nav li{ border-bottom:1px solid rgba(255,255,255,.04); }
 
-  /* Link clicável (todas as abas têm a mesma altura visual) */
+  /* Link clicável (todas as abas principais com mesma altura) */
   .nav-link{
     display:flex;
     align-items:center;
     gap:.6rem;
     color:rgba(255,255,255,.92);
     padding:16px;
-    font-size:.98rem; line-height:1.1;
+    font-size:.98rem;
+    line-height:1.1;
     text-decoration:none;
     transition:background .2s ease;
+    min-height:56px;           /* garante mesma altura visual */
+    box-sizing:border-box;
   }
   .nav-link i{ font-size:1.35rem; width:1.35rem }
   .nav-link:hover{ background:rgba(255,255,255,.06) }
@@ -123,8 +126,9 @@
   }
 
   .nav-link--sub{
-    padding:12px 16px 12px 40px; /* um pouco mais compacto e recuado */
+    padding:12px 16px 12px 40px;
     font-size:.9rem;
+    min-height:auto;      /* sub-botões podem ser mais baixinhos */
   }
 
   /* Rótulos sem ação (Eventos) */
