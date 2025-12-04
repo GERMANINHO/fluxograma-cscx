@@ -90,6 +90,41 @@
   .nav-link i{ font-size:1.35rem; width:1.35rem }
   .nav-link:hover{ background:rgba(255,255,255,.06) }
 
+  /* Botão de toggle do submenu */
+  .nav-toggle{
+    width:100%;
+    background:none;
+    border:0;
+    padding:0;
+    text-align:left;
+    cursor:pointer;
+  }
+
+  .nav-toggle .sub-arrow{
+    margin-left:auto;
+    font-size:1rem;
+    opacity:.75;
+    transition:transform .2s ease;
+  }
+
+  .has-sub.open .nav-toggle .sub-arrow{
+    transform:rotate(90deg);
+  }
+
+  /* Submenu */
+  .subnav{
+    display:none;
+    background:#111820;
+  }
+  .has-sub.open > .subnav{
+    display:block;
+  }
+
+  .nav-link--sub{
+    padding-left:40px;
+    font-size:.9rem;
+  }
+
   /* Rótulos sem ação (Eventos) */
   .nav-label{
     display:flex; align-items:center; gap:.6rem;
@@ -146,7 +181,7 @@
 
     <nav class="sidebar-nav">
       <ul>
-        <!-- Ordem alfabética das abas/botões -->
+        <!-- Ordem alfabética das abas/botões (nível principal) -->
 
         <!-- Fluxo AE -->
         <li>
@@ -155,11 +190,28 @@
           </a>
         </li>
 
-        <!-- Fluxo Blitz NPS -->
-        <li>
-          <a class="nav-link" href="https://germaninho.github.io/fluxo-nps-blitz-cscx-sankhya-abc-paulista/">
-            <i class="ion-ios-pulse-strong"></i> Fluxo Blitz NPS
-          </a>
+        <!-- Fluxo Blitz NPS (com submenu) -->
+        <li class="has-sub">
+          <button class="nav-link nav-toggle" type="button">
+            <i class="ion-ios-pulse-strong"></i>
+            <span>Fluxo Blitz NPS</span>
+            <i class="ion-chevron-right sub-arrow"></i>
+          </button>
+
+          <ul class="subnav">
+            <li>
+              <a class="nav-link nav-link--sub" href="https://germaninho.github.io/fluxo-nps-blitz-cscx-sankhya-abc-paulista/">
+                Fluxo Blitz NPS (Fluxograma)
+              </a>
+            </li>
+            <li>
+              <a class="nav-link nav-link--sub"
+                 href="https://docs.google.com/spreadsheets/d/1iDq4iY8Ja0KJq7t6F2J-4m3-iDQMctpr/edit?gid=1612811400#gid=1612811400"
+                 target="_blank" rel="noopener noreferrer">
+                Fluxo Indicador NPS
+              </a>
+            </li>
+          </ul>
         </li>
 
         <!-- Fluxo Case -->
@@ -192,7 +244,9 @@
 
         <!-- Fluxo Indicadores da Campanha Consultor e Coordenador de Sucesso do Cliente -->
         <li>
-          <a class="nav-link" href="https://docs.google.com/spreadsheets/d/1PNy9G4HqGH_rUAWJum4P1tJIG3ux3lnaion2uCsahpk/edit?gid=0#gid=0">
+          <a class="nav-link"
+             href="https://docs.google.com/spreadsheets/d/1PNy9G4HqGH_rUAWJum4P1tJIG3ux3lnaion2uCsahpk/edit?gid=0#gid=0"
+             target="_blank" rel="noopener noreferrer">
             <i class="ion-stats-bars"></i> Fluxo Indicadores da Campanha Consultor e Coordenador de Sucesso do Cliente
           </a>
         </li>
@@ -232,16 +286,36 @@
 <script>
   (function(){
     var searchInput = document.getElementById('nav-search');
-    if (!searchInput) return;
+    var items      = document.querySelectorAll('.sidebar-nav li');
+    var hasSubs    = document.querySelectorAll('.sidebar-nav li.has-sub');
 
-    var items = document.querySelectorAll('.sidebar-nav li');
+    if (searchInput) {
+      searchInput.addEventListener('input', function(){
+        var q = this.value.trim().toLowerCase();
 
-    searchInput.addEventListener('input', function(){
-      var q = this.value.trim().toLowerCase();
+        Array.prototype.forEach.call(items, function(li){
+          var text = li.textContent.toLowerCase();
+          li.style.display = (!q || text.indexOf(q) !== -1) ? '' : 'none';
+        });
 
-      Array.prototype.forEach.call(items, function(li){
-        var text = li.textContent.toLowerCase();
-        li.style.display = (!q || text.indexOf(q) !== -1) ? '' : 'none';
+        // Durante a pesquisa, mantém submenus abertos
+        Array.prototype.forEach.call(hasSubs, function(li){
+          if (q){
+            li.classList.add('open');
+          } else {
+            li.classList.remove('open');
+          }
+        });
+      });
+    }
+
+    // Toggle dos submenus
+    var toggles = document.querySelectorAll('.nav-toggle');
+    Array.prototype.forEach.call(toggles, function(btn){
+      btn.addEventListener('click', function(){
+        var li = btn.parentElement;
+        if (!li || !li.classList.contains('has-sub')) return;
+        li.classList.toggle('open');
       });
     });
   })();
