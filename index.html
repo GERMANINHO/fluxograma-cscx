@@ -137,12 +137,21 @@
     min-height:auto;      /* sub-botões podem ser menores */
   }
 
-  /* Sub-submenu */
+  /* Sub-submenu (folhas / itens finais) */
   .nav-link--sub2{
     padding:10px 16px 10px 64px;
     font-size:.88rem;
     min-height:auto;
     opacity:.98;
+  }
+
+  /* Itens estáticos (sem link / sem ação) */
+  .nav-static{
+    cursor:default;
+    user-select:none;
+  }
+  .nav-static:hover{
+    background:transparent; /* não dá sensação de link */
   }
 
   /* Rótulos sem ação (Eventos) */
@@ -220,7 +229,7 @@
           </button>
 
           <ul class="subnav">
-            <!-- Link principal da Blitz -->
+            <!-- Link principal da Blitz (mantido) -->
             <li>
               <a class="nav-link nav-link--sub"
                  href="https://germaninho.github.io/fluxo-nps-blitz-cscx-sankhya-abc-paulista/">
@@ -228,7 +237,7 @@
               </a>
             </li>
 
-            <!-- Monitoramento NPS — Plano de Ação -->
+            <!-- Monitoramento NPS — Plano de Ação (sem links internos) -->
             <li class="has-sub">
               <button class="nav-link nav-link--sub nav-toggle" type="button">
                 <span class="nav-text">Monitoramento NPS — Plano de Ação</span>
@@ -237,15 +246,14 @@
 
               <ul class="subnav">
                 <li>
-                  <a class="nav-link nav-link--sub2"
-                     href="https://germaninho.github.io/fluxo-nps-blitz-cscx-sankhya-abc-paulista/#monitoramento-nps-sintese">
+                  <span class="nav-link nav-link--sub2 nav-static">
                     Síntese do Plano de Ação NPS
-                  </a>
+                  </span>
                 </li>
               </ul>
             </li>
 
-            <!-- Fechamento de Loop NPS Detratores -->
+            <!-- Fechamento de Loop NPS Detratores (sem links internos) -->
             <li class="has-sub">
               <button class="nav-link nav-link--sub nav-toggle" type="button">
                 <span class="nav-text">Fechamento de Loop NPS Detratores</span>
@@ -254,33 +262,29 @@
 
               <ul class="subnav">
                 <li>
-                  <a class="nav-link nav-link--sub2"
-                     href="https://germaninho.github.io/fluxo-nps-blitz-cscx-sankhya-abc-paulista/#loop-detratores-entendimento">
+                  <span class="nav-link nav-link--sub2 nav-static">
                     Entendimento do cenário e Contato Inicial
-                  </a>
+                  </span>
                 </li>
                 <li>
-                  <a class="nav-link nav-link--sub2"
-                     href="https://germaninho.github.io/fluxo-nps-blitz-cscx-sankhya-abc-paulista/#loop-detratores-montagem">
+                  <span class="nav-link nav-link--sub2 nav-static">
                     Montagem e Execução do Plano
-                  </a>
+                  </span>
                 </li>
                 <li>
-                  <a class="nav-link nav-link--sub2"
-                     href="https://germaninho.github.io/fluxo-nps-blitz-cscx-sankhya-abc-paulista/#loop-detratores-colaboracao">
+                  <span class="nav-link nav-link--sub2 nav-static">
                     Plano de Execução com Colaboração de Outras Áreas
-                  </a>
+                  </span>
                 </li>
                 <li>
-                  <a class="nav-link nav-link--sub2"
-                     href="https://germaninho.github.io/fluxo-nps-blitz-cscx-sankhya-abc-paulista/#loop-detratores-followup">
+                  <span class="nav-link nav-link--sub2 nav-static">
                     Plano de Follow-up pós Plano de Ação
-                  </a>
+                  </span>
                 </li>
               </ul>
             </li>
 
-            <!-- Fluxo Indicador NPS (AGORA SOMENTE TOGGLE, SEM LINK) -->
+            <!-- Fluxo Indicador NPS (somente toggle, anos com link) -->
             <li class="has-sub">
               <button class="nav-link nav-link--sub nav-toggle" type="button">
                 <span class="nav-text">Fluxo Indicador NPS</span>
