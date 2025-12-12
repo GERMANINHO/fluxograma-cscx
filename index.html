@@ -99,11 +99,12 @@
     flex:1; /* ocupa o meio e empurra a seta para a direita */
   }
 
-  /* Botão/link de toggle do submenu (usa o mesmo visual da nav-link) */
+  /* Botão de toggle do submenu (usa o mesmo visual da nav-link) */
   .nav-toggle{
     width:100%;
     background:none;
     border:0;
+    padding:0;
     text-align:left;
     cursor:pointer;
     font: inherit;
@@ -226,14 +227,12 @@
               </a>
             </li>
 
-            <!-- Fluxo Indicador NPS (agora abre o link atual e libera os anos) -->
+            <!-- Fluxo Indicador NPS (AGORA SOMENTE TOGGLE, SEM LINK) -->
             <li class="has-sub">
-              <a class="nav-link nav-link--sub nav-toggle"
-                 href="https://docs.google.com/spreadsheets/d/1iDq4iY8Ja0KJq7t6F2J-4m3-iDQMctpr/edit?gid=1612811400#gid=1612811400"
-                 target="_blank" rel="noopener noreferrer">
+              <button class="nav-link nav-link--sub nav-toggle" type="button">
                 <span class="nav-text">Fluxo Indicador NPS</span>
                 <i class="ion-chevron-right sub-arrow"></i>
-              </a>
+              </button>
 
               <ul class="subnav">
                 <li>
@@ -388,7 +387,7 @@
       });
     }
 
-    // Toggle dos submenus (funciona para botões e links com .nav-toggle)
+    // Toggle dos submenus
     var toggles = document.querySelectorAll('.nav-toggle');
     Array.prototype.forEach.call(toggles, function(btn){
       btn.addEventListener('click', function(){
