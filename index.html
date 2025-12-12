@@ -1,4 +1,4 @@
-<!doctype html> 
+<!doctype html>
 <html lang="pt-br">
 <head>
 <meta charset="utf-8" />
@@ -99,12 +99,11 @@
     flex:1; /* ocupa o meio e empurra a seta para a direita */
   }
 
-  /* Botão de toggle do submenu (usa o mesmo visual da nav-link) */
+  /* Botão/link de toggle do submenu (usa o mesmo visual da nav-link) */
   .nav-toggle{
     width:100%;
     background:none;
     border:0;
-    padding:0;
     text-align:left;
     cursor:pointer;
     font: inherit;
@@ -135,6 +134,14 @@
     padding:12px 16px 12px 40px;
     font-size:.9rem;
     min-height:auto;      /* sub-botões podem ser menores */
+  }
+
+  /* Sub-submenu (anos) */
+  .nav-link--sub2{
+    padding:10px 16px 10px 64px;
+    font-size:.88rem;
+    min-height:auto;
+    opacity:.98;
   }
 
   /* Rótulos sem ação (Eventos) */
@@ -218,13 +225,48 @@
                 Fluxo Blitz NPS
               </a>
             </li>
-            <li>
-              <a class="nav-link nav-link--sub"
+
+            <!-- Fluxo Indicador NPS (agora abre o link atual e libera os anos) -->
+            <li class="has-sub">
+              <a class="nav-link nav-link--sub nav-toggle"
                  href="https://docs.google.com/spreadsheets/d/1iDq4iY8Ja0KJq7t6F2J-4m3-iDQMctpr/edit?gid=1612811400#gid=1612811400"
                  target="_blank" rel="noopener noreferrer">
-                Fluxo Indicador NPS
+                <span class="nav-text">Fluxo Indicador NPS</span>
+                <i class="ion-chevron-right sub-arrow"></i>
               </a>
+
+              <ul class="subnav">
+                <li>
+                  <a class="nav-link nav-link--sub2"
+                     href="https://docs.google.com/spreadsheets/d/1zR1gsOBuOQ0VHiw-Pkb57LcY3Au-0GTH/edit?gid=1470696139#gid=1470696139"
+                     target="_blank" rel="noopener noreferrer">
+                    2023
+                  </a>
+                </li>
+                <li>
+                  <a class="nav-link nav-link--sub2"
+                     href="https://docs.google.com/spreadsheets/d/1Ekcj-2FSZes0qPc3DZjoAQG-D1aZ0pzS/edit?gid=1470696139#gid=1470696139"
+                     target="_blank" rel="noopener noreferrer">
+                    2024
+                  </a>
+                </li>
+                <li>
+                  <a class="nav-link nav-link--sub2"
+                     href="https://docs.google.com/spreadsheets/d/1iDq4iY8Ja0KJq7t6F2J-4m3-iDQMctpr/edit?gid=1612811400#gid=1612811400"
+                     target="_blank" rel="noopener noreferrer">
+                    2025
+                  </a>
+                </li>
+                <li>
+                  <a class="nav-link nav-link--sub2"
+                     href="https://docs.google.com/spreadsheets/d/1BCYydiispqHyBBKPyPYMAmrY5dJ-31N-/edit?gid=1612811400#gid=1612811400"
+                     target="_blank" rel="noopener noreferrer">
+                    2026
+                  </a>
+                </li>
+              </ul>
             </li>
+
           </ul>
         </li>
 
@@ -346,7 +388,7 @@
       });
     }
 
-    // Toggle dos submenus
+    // Toggle dos submenus (funciona para botões e links com .nav-toggle)
     var toggles = document.querySelectorAll('.nav-toggle');
     Array.prototype.forEach.call(toggles, function(btn){
       btn.addEventListener('click', function(){
@@ -360,4 +402,3 @@
 
 </body>
 </html>
-
