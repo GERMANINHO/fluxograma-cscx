@@ -1,67 +1,87 @@
-# Fluxograma CS/CX — Sankhya ABC Paulista
+# Hub de Fluxos CS/CX — Sankhya ABC Paulista (fluxograma-cscx)
 
-Repositório do **hub de fluxos interativos** dos processos de CS/CX da unidade **Sankhya ABC Paulista**.  
-Aqui você encontra uma página única em **HTML/CSS/JS puro** que funciona como atalho central para todos os fluxos, planilhas e materiais de apoio do time.
+Repositório do **Hub de Fluxos** do time de **CS/CX da unidade Sankhya ABC Paulista**.
 
-A aplicação foi pensada para rodar 100% em **front-end**, podendo ser publicada facilmente via **GitHub Pages** para navegação online.
+A proposta é simples: **uma página única** (HTML/CSS/JS puro) que funciona como **atalho central** para:
+- fluxos (GitHub Pages),
+- indicadores (Google Sheets),
+- apresentações (PDF/Slides),
+- materiais internos (portais e links Sankhya).
+
+> Projeto **100% front-end** (estático) — sem build, sem dependências de compilação. Ideal para GitHub Pages.
 
 ---
 
 ## 🌐 O que este projeto entrega
 
-- **Hub de Fluxos — Sankhya** com:
-  - Menu lateral fixo com ícones (Ionicons);
-  - Campo de **pesquisa** para localizar fluxos pelo nome;
-  - Links diretos para:
-    - Fluxo AE;
-    - Fluxo Blitz NPS (e indicador NPS);
-    - Fluxo Case (e indicador de Case);
-    - Fluxo Certificação;
-    - Fluxo de Usuários Temporários;
-    - Fluxo Eventos (rótulo organizador);
-    - Indicadores da Campanha de Consultor/Coordenador de CS;
-    - Fluxo de Licenciamento de Empresas (OS/RevOps);
-    - Fluxo Passagem de Bastão — Implantação > Base;
-    - Fluxo Pendências (triagem, agenda, FUP).
-- **Hero image** centralizada para comunicação visual (logo Sankhya e adquiridas).
-- Layout responsivo com barra lateral rolável, pensado para uso diário do time de CS/CX.
+- **Menu lateral fixo** (rolável) com ícones e layout pensado para uso diário.
+- **Campo de pesquisa** para filtrar fluxos pelo nome.
+- **Submenus expansíveis** para agrupar itens (ex.: AE, Blitz NPS, Case, Hub Comercial).
+- **Links diretos** para fluxos e materiais de apoio (internos e externos).
+- **Hero image** centralizada (imagem Sankhya/adquiridas) para comunicação visual.
+
+---
+
+## 🔗 Conteúdos disponíveis no Hub (atalhos)
+
+> A lista abaixo reflete o que está publicado no menu do `index.html` (pode crescer conforme novos fluxos forem adicionados).
+
+### CS/CX (Processos e Indicadores)
+- **Fluxo AE**
+  - Fluxo (GitHub Pages)
+  - Planilha: *AE - Agenda x Meta x Realizado*
+- **Fluxo Blitz NPS**
+  - Fluxo/launcher (GitHub Pages)
+  - Indicador NPS por ano (Sheets)
+  - Follow-ups pós plano (ancoras internas no fluxo)
+- **Fluxo Case**
+  - Fluxo (GitHub Pages)
+  - Indicador de Case (Sheets)
+- **Fluxo Certificação** (GitHub Pages)
+- **Fluxo de Usuários Temporários** (GitHub Pages)
+- **Fluxo Pendências** (GitHub Pages)
+- **Fluxo Passagem de Bastão — Implantação → Base** (GitHub Pages)
+- **Fluxo MRR x Churn** (GitHub Pages)
+- **Status Report - CS** (Google Slides)
+
+### Operação / Materiais
+- **Fluxo Licenciamento de Empresas (OS/RevOps)** (GitHub Pages)
+- **Gerente Online (GOL)** (GitHub Pages)
+
+### Hub Comercial (atalhos de apoio)
+- Links úteis (ex.: GMO, battlecards, cases, produtos, apresentações e materiais relacionados)
+> Observação: alguns itens podem exigir login em domínio Sankhya.
 
 ---
 
 ## 🧱 Tecnologias utilizadas
 
-- **HTML5** — estrutura da página;
-- **CSS3** — layout (sidebar fixa, conteúdo centralizado, scroll customizado);
-- **JavaScript vanilla** — lógica de:
-  - Filtro de pesquisa no menu lateral;
-  - Abertura/fechamento de submenus (por exemplo, Blitz NPS e Case);
-- **Ionicons v2** — ícones no menu lateral.
-
-Não há dependências de build (Webpack, Vite etc.): é um projeto **estático**, ideal para GitHub Pages.
+- **HTML5** — estrutura do hub
+- **CSS3** — layout (sidebar fixa, responsividade, scroll customizado)
+- **JavaScript (vanilla)** — filtro de pesquisa e toggle de submenus
+- **Ionicons v2** — ícones do menu
 
 ---
 
-## 📂 Estrutura básica
-
-Os arquivos principais deste repositório são:
+## 📂 Estrutura do repositório
 
 - `index.html`  
-  Página principal do **Hub de Fluxos — Sankhya**, contendo:
-  - Sidebar de navegação;
-  - Campo de pesquisa;
-  - Links para os fluxos externos (outros GitHub Pages e planilhas);
-  - Script JS embutido para filtro e toggle dos submenus.
+  Página principal do Hub (menu, busca, submenus e links).
 - `imagem-sankhya-adquiridas.png`  
-  Imagem utilizada como destaque visual na área principal (hero).
-
-> Caso você adicione novos fluxos, basta criar o link correspondente na sidebar do `index.html` e, se necessário, incluí-los também na busca.
+  Imagem do hero (destaque visual no conteúdo).
+- `*.pdf` / `*.pptx.pdf` (quando existirem)  
+  Materiais locais referenciados por links do menu.
 
 ---
 
 ## ▶️ Como rodar localmente
 
-1. **Clone** o repositório:
+### Opção A) Abrir direto no navegador
+Você pode abrir o `index.html` com duplo clique.
 
-   ```bash
-   git clone https://github.com/<seu-usuario>/fluxograma-cscx.git
-   cd fluxograma-cscx
+> Dica: alguns navegadores podem restringir certos comportamentos com `file://`. Se notar algo estranho com arquivos locais, use um servidor local (Opção B).
+
+### Opção B) Subir um servidor local (recomendado)
+**Python (rápido):**
+```bash
+python -m http.server 5500
