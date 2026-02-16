@@ -13,11 +13,20 @@
     --sidebar:#19222a;
     --header:#09f;
     --text:#fff;
-    --content-bg:#fefefe;
+
+    /* ✅ Cor dominante do fundo da imagem "imagem-sankhya-adquiridas.png"
+       (evita QUALQUER "faixa branca" se sobrar espaço) */
+    --content-bg:#283848;
+
+    /* ✅ Controle do encaixe da imagem:
+       - contain = não corta (pode sobrar espaço, mas fica com a cor do fundo)
+       - cover   = preenche tudo (pode cortar um pouco) */
+    --hero-fit: contain;
   }
 
   *{box-sizing:border-box}
   html,body{height:100%}
+
   body{
     margin:0;
     font-family: system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;
@@ -73,7 +82,7 @@
 
   .sidebar-nav{
     flex:1;
-    overflow:auto; /* rolagem para ver todas as abas */
+    overflow:auto;
   }
   .sidebar-nav ul{list-style:none; margin:0; padding:0}
   .sidebar-nav li{ border-bottom:1px solid rgba(255,255,255,.04); }
@@ -89,17 +98,14 @@
     line-height:1.1;
     text-decoration:none;
     transition:background .2s ease;
-    min-height:56px;           /* mesma altura entre as abas */
-    box-sizing:border-box;
+    min-height:56px;
   }
   .nav-link i{ font-size:1.35rem; width:1.35rem }
   .nav-link:hover{ background:rgba(255,255,255,.06) }
 
-  .nav-text{
-    flex:1; /* ocupa o meio e empurra a seta para a direita */
-  }
+  .nav-text{ flex:1; }
 
-  /* Botão de toggle do submenu (usa o mesmo visual da nav-link) */
+  /* Botão de toggle do submenu */
   .nav-toggle{
     width:100%;
     background:none;
@@ -111,30 +117,27 @@
     color: inherit;
   }
 
+  .nav-toggle:focus-visible{
+    outline:2px solid rgba(255,255,255,.35);
+    outline-offset:-2px;
+  }
+
   .nav-toggle .sub-arrow{
     margin-left:auto;
     font-size:1rem;
     opacity:.75;
     transition:transform .2s ease;
   }
-
-  .has-sub.open .nav-toggle .sub-arrow{
-    transform:rotate(90deg);
-  }
+  .has-sub.open .nav-toggle .sub-arrow{ transform:rotate(90deg); }
 
   /* Submenu */
-  .subnav{
-    display:none;
-    background:#111820;
-  }
-  .has-sub.open > .subnav{
-    display:block;
-  }
+  .subnav{ display:none; background:#111820; }
+  .has-sub.open > .subnav{ display:block; }
 
   .nav-link--sub{
     padding:12px 16px 12px 40px;
     font-size:.9rem;
-    min-height:auto;      /* sub-botões podem ser menores */
+    min-height:auto;
   }
 
   /* Sub-submenu */
@@ -155,27 +158,25 @@
   }
   .nav-label i{ font-size:1.35rem; width:1.35rem }
 
-  /* Conteúdo */
+  /* ✅ Conteúdo (remove “moldura” branca e ocupa a tela toda) */
   .content{
     margin-left:17em;
     min-height:100vh;
-    padding:24px;
-    display:flex;
-    align-items:center;
-    justify-content:center;
+    padding:0;                 /* ← remove o padding que criava “faixas” */
+    background:var(--content-bg);
   }
 
-  /* Hero: imagem grande e centralizada */
+  /* ✅ Hero: ocupar o máximo possível */
   .hero{
     width:100%;
-    display:flex;
-    align-items:center;
-    justify-content:center;
+    height:100vh;              /* ← usa 100% da altura da viewport */
+    background:var(--content-bg);
   }
   .hero img{
-    width:min(95%, 1400px);
-    max-height:85vh;
-    height:auto; display:block;
+    width:100%;
+    height:100%;
+    display:block;
+    object-fit:var(--hero-fit); /* contain (default) ou cover */
   }
 
   /* Scroll fino na barra lateral */
@@ -195,7 +196,7 @@
     <div class="sidebar-search">
       <div class="sidebar-search-inner">
         <i class="ion-search"></i>
-        <input id="nav-search" type="text" placeholder="Pesquisar fluxos..." />
+        <input id="nav-search" type="text" placeholder="Pesquisar fluxos..." autocomplete="off" />
       </div>
     </div>
 
@@ -298,7 +299,7 @@
               </ul>
             </li>
 
-            <!-- Fluxo Indicador NPS (AGORA SOMENTE TOGGLE, SEM LINK) -->
+            <!-- Fluxo Indicador NPS (toggle) -->
             <li class="has-sub">
               <button class="nav-link nav-link--sub nav-toggle" type="button">
                 <span class="nav-text">Fluxo Indicador NPS</span>
@@ -367,14 +368,13 @@
 
         <!-- Fluxo Certificação -->
         <li>
-          <!-- ✅ LINK ATUALIZADO AQUI -->
           <a class="nav-link" href="https://germaninho.github.io/fluxo-certificacao/">
             <i class="ion-ribbon-b"></i>
             <span class="nav-text">Fluxo Certificação</span>
           </a>
         </li>
 
-        <!-- Fluxo de Usuários Temporários (LINK ATUALIZADO) -->
+        <!-- Fluxo de Usuários Temporários -->
         <li>
           <a class="nav-link" href="https://germaninho.github.io/fluxo-usuarios-temporarios-sankhya-abc-paulista/">
             <i class="ion-person-stalker"></i>
@@ -456,7 +456,6 @@
               </a>
             </li>
 
-            <!-- ✅ White Space (NOVO) -->
             <li>
               <a class="nav-link nav-link--sub"
                  href="https://docs.google.com/spreadsheets/d/1yBJdudMvufN-drM66FPzz4QbjbymSkHkCJzNFtI-_pU/edit?gid=0#gid=0"
@@ -464,11 +463,6 @@
                 White Space
               </a>
             </li>
-
-            <!-- =========================================================
-                 NOVAS SUB ABAS (2º nível) — em ORDEM ALFABÉTICA
-                 (removido o antigo bloco "Manual de Valor")
-            ========================================================== -->
 
             <!-- ERP Sankhya -->
             <li class="has-sub">
@@ -851,7 +845,7 @@
           </a>
         </li>
 
-        <!-- ✅ NOVA ABA: Fluxo MRR x Churn (Hub → Fluxo no GitHub Pages) -->
+        <!-- Fluxo MRR x Churn -->
         <li>
           <a class="nav-link"
              href="https://germaninho.github.io/fluxo-mrr-x-churn-cscx-sankhya-abc-paulista/">
@@ -860,7 +854,7 @@
           </a>
         </li>
 
-        <!-- Fluxo Passagem de Bastão - Implantação > Base -->
+        <!-- Fluxo Passagem de Bastão -->
         <li>
           <a class="nav-link" href="https://germaninho.github.io/fluxo-passagem-bastao-implantacao-base-cscx-sankhya-abc-paulista/">
             <i class="ion-shuffle"></i>
@@ -876,7 +870,7 @@
           </a>
         </li>
 
-        <!-- ✅ NOVA ABA: Status Report - CS (Google Slides) -->
+        <!-- Status Report - CS -->
         <li>
           <a class="nav-link"
              href="https://docs.google.com/presentation/d/175DOG_OIwGhff8u86_JmQCBlVKoFO1_N/edit?slide=id.ge5f0f81c71_0_99#slide=id.ge5f0f81c71_0_99"
@@ -892,47 +886,117 @@
 
   <main class="content">
     <div class="hero">
-      <img src="imagem-sankhya-adquiridas.png" alt="Sankhya e adquiridas">
+      <img
+        src="imagem-sankhya-adquiridas.png"
+        alt="Sankhya e adquiridas"
+        decoding="async"
+        loading="eager"
+      >
     </div>
   </main>
 </section>
 
 <script>
-  (function(){
-    var searchInput = document.getElementById('nav-search');
-    var items      = document.querySelectorAll('.sidebar-nav li');
-    var hasSubs    = document.querySelectorAll('.sidebar-nav li.has-sub');
+(() => {
+  'use strict';
 
-    if (searchInput) {
-      searchInput.addEventListener('input', function(){
-        var q = this.value.trim().toLowerCase();
+  const $  = (sel, root=document) => root.querySelector(sel);
+  const $$ = (sel, root=document) => Array.from(root.querySelectorAll(sel));
 
-        Array.prototype.forEach.call(items, function(li){
-          var text = li.textContent.toLowerCase();
-          li.style.display = (!q || text.indexOf(q) !== -1) ? '' : 'none';
-        });
+  const searchInput = $('#nav-search');
 
-        // Durante a pesquisa, mantém submenus abertos
-        Array.prototype.forEach.call(hasSubs, function(li){
-          if (q){
-            li.classList.add('open');
-          } else {
-            li.classList.remove('open');
-          }
-        });
-      });
-    }
+  // ✅ Guardrail 1: garante aria-expanded/aria-controls em TODOS os toggles
+  function wireSubmenus() {
+    $$('.sidebar-nav li').forEach(li => {
+      const subnav = li.querySelector(':scope > ul.subnav');
+      const btn    = li.querySelector(':scope > button.nav-toggle');
 
-    // Toggle dos submenus
-    var toggles = document.querySelectorAll('.nav-toggle');
-    Array.prototype.forEach.call(toggles, function(btn){
-      btn.addEventListener('click', function(){
-        var li = btn.parentElement;
+      if (subnav && btn) {
+        li.classList.add('has-sub');
+
+        if (!subnav.id) {
+          subnav.id = 'subnav-' + Math.random().toString(36).slice(2, 10);
+        }
+
+        btn.setAttribute('aria-controls', subnav.id);
+        btn.setAttribute('aria-expanded', li.classList.contains('open') ? 'true' : 'false');
+      }
+    });
+  }
+
+  function setOpen(li, open) {
+    li.classList.toggle('open', open);
+    const btn = li.querySelector(':scope > button.nav-toggle');
+    if (btn) btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+  }
+
+  // ✅ Guardrail 2: toggle robusto (usa closest, não depende de estrutura exata)
+  function bindToggles() {
+    $$('.nav-toggle').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const li = btn.closest('li');
         if (!li || !li.classList.contains('has-sub')) return;
-        li.classList.toggle('open');
+        setOpen(li, !li.classList.contains('open'));
       });
     });
-  })();
+  }
+
+  // ✅ Guardrail 3: se tiver target="_blank" e esquecer rel, o script corrige
+  function normalizeBlankLinks() {
+    $$('a[target="_blank"]').forEach(a => {
+      const rel = (a.getAttribute('rel') || '').toLowerCase();
+      const needed = ['noopener', 'noreferrer'];
+      const finalRel = Array.from(new Set(rel.split(/\s+/).filter(Boolean).concat(needed))).join(' ');
+      a.setAttribute('rel', finalRel);
+    });
+  }
+
+  // ✅ Guardrail 4: busca sem “quebrar” menus + abre tudo durante pesquisa
+  function bindSearch() {
+    if (!searchInput) return;
+
+    let raf = 0;
+
+    const run = () => {
+      const q = searchInput.value.trim().toLowerCase();
+      const items   = $$('.sidebar-nav li');
+      const hasSubs = $$('.sidebar-nav li.has-sub');
+
+      items.forEach(li => {
+        const text = (li.textContent || '').toLowerCase();
+        li.style.display = (!q || text.includes(q)) ? '' : 'none';
+      });
+
+      hasSubs.forEach(li => setOpen(li, !!q));
+    };
+
+    searchInput.addEventListener('input', () => {
+      cancelAnimationFrame(raf);
+      raf = requestAnimationFrame(run);
+    });
+  }
+
+  // ✅ Guardrail 5: se a imagem quebrar, você vê o erro na tela (em vez de “nada”)
+  function heroImageFallback() {
+    const img  = $('.hero img');
+    const hero = $('.hero');
+    if (!img || !hero) return;
+
+    img.addEventListener('error', () => {
+      hero.innerHTML =
+        '<div style="color:#fff;font-weight:600;padding:24px;font-size:14px">' +
+        '⚠️ Imagem não encontrada: verifique se o arquivo <b>imagem-sankhya-adquiridas.png</b> está na mesma pasta do index.html.' +
+        '</div>';
+    });
+  }
+
+  // Init
+  wireSubmenus();
+  bindToggles();
+  normalizeBlankLinks();
+  bindSearch();
+  heroImageFallback();
+})();
 </script>
 
 </body>
