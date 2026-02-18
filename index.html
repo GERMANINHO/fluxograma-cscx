@@ -14,18 +14,25 @@
     --header:#09f;
     --text:#fff;
 
-    /* ✅ Cor dominante do fundo da imagem "imagem-sankhya-adquiridas.png"
-       (evita QUALQUER "faixa branca" se sobrar espaço) */
+    /* ✅ Fallback (o JS ajusta automaticamente lendo a cor do próprio PNG) */
     --content-bg:#283848;
 
-    /* ✅ Controle do encaixe da imagem:
-       - contain = não corta (pode sobrar espaço, mas fica com a cor do fundo)
+    /* ✅ Encaixe da imagem:
+       - contain = não corta (pode sobrar espaço)
        - cover   = preenche tudo (pode cortar um pouco) */
     --hero-fit: contain;
+
+    /* ✅ CORREÇÃO PRINCIPAL:
+       deixa a imagem “no mais alto nível” (encostada em cima) */
+    --hero-position: top center;
   }
 
   *{box-sizing:border-box}
   html,body{height:100%}
+
+  html{
+    background:var(--content-bg);
+  }
 
   body{
     margin:0;
@@ -158,25 +165,35 @@
   }
   .nav-label i{ font-size:1.35rem; width:1.35rem }
 
-  /* ✅ Conteúdo (remove “moldura” branca e ocupa a tela toda) */
+  /* ✅ Conteúdo (sem “moldura” / sem padding) */
   .content{
     margin-left:17em;
     min-height:100vh;
-    padding:0;                 /* ← remove o padding que criava “faixas” */
+    padding:0;
     background:var(--content-bg);
   }
 
-  /* ✅ Hero: ocupar o máximo possível */
+  /* ✅ Hero ocupando a viewport inteira */
   .hero{
     width:100%;
-    height:100vh;              /* ← usa 100% da altura da viewport */
+    height:100vh;
     background:var(--content-bg);
+    overflow:hidden; /* evita qualquer linha por arredondamento */
   }
+  /* Mobile moderno (evita bug de 100vh em alguns browsers) */
+  @supports (height: 100svh){
+    .hero{ height:100svh; }
+  }
+
   .hero img{
     width:100%;
     height:100%;
     display:block;
-    object-fit:var(--hero-fit); /* contain (default) ou cover */
+    background:var(--content-bg);
+
+    /* ✅ principal: não fica “centralizado” verticalmente; encosta em cima */
+    object-fit:var(--hero-fit);
+    object-position:var(--hero-position);
   }
 
   /* Scroll fino na barra lateral */
@@ -202,8 +219,6 @@
 
     <nav class="sidebar-nav">
       <ul>
-        <!-- Ordem alfabética das abas principais -->
-
         <!-- Fluxo AE (com submenu) -->
         <li class="has-sub">
           <button class="nav-link nav-toggle" type="button">
@@ -239,7 +254,6 @@
           </button>
 
           <ul class="subnav">
-            <!-- Link principal da Blitz -->
             <li>
               <a class="nav-link nav-link--sub"
                  href="https://germaninho.github.io/fluxo-nps-blitz-cscx-sankhya-abc-paulista/">
@@ -247,7 +261,6 @@
               </a>
             </li>
 
-            <!-- Monitoramento NPS — Plano de Ação -->
             <li class="has-sub">
               <button class="nav-link nav-link--sub nav-toggle" type="button">
                 <span class="nav-text">Monitoramento NPS — Plano de Ação</span>
@@ -264,7 +277,6 @@
               </ul>
             </li>
 
-            <!-- Fechamento de Loop NPS Detratores -->
             <li class="has-sub">
               <button class="nav-link nav-link--sub nav-toggle" type="button">
                 <span class="nav-text">Fechamento de Loop NPS Detratores</span>
@@ -299,7 +311,6 @@
               </ul>
             </li>
 
-            <!-- Fluxo Indicador NPS (toggle) -->
             <li class="has-sub">
               <button class="nav-link nav-link--sub nav-toggle" type="button">
                 <span class="nav-text">Fluxo Indicador NPS</span>
@@ -827,7 +838,7 @@
           </ul>
         </li>
 
-        <!-- Fluxo Indicadores da Campanha Consultor e Coordenador de Sucesso do Cliente -->
+        <!-- Fluxo Indicadores da Campanha -->
         <li>
           <a class="nav-link"
              href="https://docs.google.com/spreadsheets/d/1PNy9G4HqGH_rUAWJum4P1tJIG3ux3lnaion2uCsahpk/edit?gid=0#gid=0"
@@ -930,7 +941,7 @@
     if (btn) btn.setAttribute('aria-expanded', open ? 'true' : 'false');
   }
 
-  // ✅ Guardrail 2: toggle robusto (usa closest, não depende de estrutura exata)
+  // ✅ Guardrail 2: toggle robusto (usa closest)
   function bindToggles() {
     $$('.nav-toggle').forEach(btn => {
       btn.addEventListener('click', () => {
@@ -976,10 +987,8 @@
     });
   }
 
-  // ✅ Guardrail 5: se a imagem quebrar, você vê o erro na tela (em vez de “nada”)
-  function heroImageFallback() {
-    const img  = $('.hero img');
-    const hero = $('.hero');
+  // ✅ Guardrail 5: se a imagem quebrar, mostra o erro na tela
+  function heroImageFallback(img, hero) {
     if (!img || !hero) return;
 
     img.addEventListener('error', () => {
@@ -990,12 +999,72 @@
     });
   }
 
+  // ✅ Guardrail 6 (ANTI “FAIXA”): pega a cor real do fundo do PNG automaticamente
+  // (evita ajuste manual de --content-bg e qualquer diferença de tom)
+  function autoBackgroundFromImage(img){
+    if (!img) return;
+
+    const apply = () => {
+      try{
+        const w = img.naturalWidth || 0;
+        const h = img.naturalHeight || 0;
+        if (!w || !h) return;
+
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d', { willReadFrequently: true });
+        canvas.width = w;
+        canvas.height = h;
+        ctx.drawImage(img, 0, 0);
+
+        // amostra um “patch” no meio-direita (normalmente só fundo, sem textos/elementos)
+        const x1 = Math.max(0, w - 40);
+        const y1 = Math.max(0, Math.floor(h/2) - 20);
+        const sw = Math.min(30, w - x1);
+        const sh = Math.min(40, h - y1);
+
+        const data = ctx.getImageData(x1, y1, sw, sh).data;
+
+        let r=0,g=0,b=0,c=0;
+        for (let i=0;i<data.length;i+=4){
+          const a = data[i+3];
+          if (a < 10) continue;
+          r += data[i];
+          g += data[i+1];
+          b += data[i+2];
+          c++;
+        }
+        if (!c) return;
+
+        r = Math.round(r/c);
+        g = Math.round(g/c);
+        b = Math.round(b/c);
+
+        document.documentElement.style.setProperty('--content-bg', `rgb(${r},${g},${b})`);
+      }catch(e){
+        // se o browser bloquear por algum motivo, mantém o fallback do CSS
+      }
+    };
+
+    // garante que a imagem está decodificada antes de ler pixels
+    if (img.complete && img.naturalWidth) {
+      apply();
+      return;
+    }
+
+    img.addEventListener('load', apply, { once:true });
+  }
+
   // Init
   wireSubmenus();
   bindToggles();
   normalizeBlankLinks();
   bindSearch();
-  heroImageFallback();
+
+  const hero = $('.hero');
+  const img  = $('.hero img');
+
+  heroImageFallback(img, hero);
+  autoBackgroundFromImage(img);
 })();
 </script>
 
