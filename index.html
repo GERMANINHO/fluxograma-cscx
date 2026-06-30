@@ -1,1112 +1,337 @@
 <!doctype html>
 <html lang="pt-br">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Hub de Fluxos — Sankhya</title>
-
-<!-- Ionicons v2 (ícones) -->
-<link rel="stylesheet" href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">
-
-<style>
-  :root{
-    --sidebar:#19222a;
-    --header:#09f;
-    --text:#fff;
-
-    /* ✅ Fallback (o JS ajusta automaticamente lendo a cor do próprio PNG) */
-    --content-bg:#283848;
-
-    /* ✅ Encaixe da imagem:
-       - contain = não corta (pode sobrar espaço)
-       - cover   = preenche tudo (pode cortar um pouco) */
-    --hero-fit: contain;
-
-    /* ✅ CORREÇÃO PRINCIPAL:
-       deixa a imagem “no mais alto nível” (encostada em cima) */
-    --hero-position: top center;
-  }
-
-  *{box-sizing:border-box}
-  html,body{height:100%}
-
-  html{
-    background:var(--content-bg);
-  }
-
-  body{
-    margin:0;
-    font-family: system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;
-    background:var(--content-bg);
-    color:#111;
-  }
-
-  .app{min-height:100vh}
-
-  /* Sidebar */
-  .sidebar{
-    position:fixed; inset:0 auto 0 0;
-    width:17em; background:var(--sidebar); color:var(--text);
-    overflow:hidden;
-    display:flex;
-    flex-direction:column;
-  }
-  .sidebar header{
-    background:var(--header);
-    padding:12px 16px;
-    font-weight:700;
-  }
-
-  /* Barra de pesquisa */
-  .sidebar-search{
-    padding:8px 12px;
-    background:#111a22;
-    border-bottom:1px solid rgba(255,255,255,.05);
-  }
-  .sidebar-search-inner{
-    display:flex;
-    align-items:center;
-    gap:.5rem;
-    background:rgba(0,0,0,.25);
-    padding:4px 10px;
-    border-radius:999px;
-  }
-  .sidebar-search-inner i{
-    font-size:1.1rem;
-    opacity:.75;
-  }
-  .sidebar-search input{
-    border:none;
-    outline:none;
-    background:transparent;
-    color:var(--text);
-    font-size:.85rem;
-    width:100%;
-  }
-  .sidebar-search input::placeholder{
-    color:rgba(255,255,255,.55);
-  }
-
-  .sidebar-nav{
-    flex:1;
-    overflow:auto;
-  }
-  .sidebar-nav ul{list-style:none; margin:0; padding:0}
-  .sidebar-nav li{ border-bottom:1px solid rgba(255,255,255,.04); }
-
-  /* Link clicável (todas as abas principais com mesma altura) */
-  .nav-link{
-    display:flex;
-    align-items:center;
-    gap:.6rem;
-    color:rgba(255,255,255,.92);
-    padding:16px;
-    font-size:.98rem;
-    line-height:1.1;
-    text-decoration:none;
-    transition:background .2s ease;
-    min-height:56px;
-  }
-  .nav-link i{ font-size:1.35rem; width:1.35rem }
-  .nav-link:hover{ background:rgba(255,255,255,.06) }
-
-  .nav-text{ flex:1; }
-
-  /* Botão de toggle do submenu */
-  .nav-toggle{
-    width:100%;
-    background:none;
-    border:0;
-    padding:0;
-    text-align:left;
-    cursor:pointer;
-    font: inherit;
-    color: inherit;
-  }
-
-  .nav-toggle:focus-visible{
-    outline:2px solid rgba(255,255,255,.35);
-    outline-offset:-2px;
-  }
-
-  .nav-toggle .sub-arrow{
-    margin-left:auto;
-    font-size:1rem;
-    opacity:.75;
-    transition:transform .2s ease;
-  }
-  .has-sub.open .nav-toggle .sub-arrow{ transform:rotate(90deg); }
-
-  /* Submenu */
-  .subnav{ display:none; background:#111820; }
-  .has-sub.open > .subnav{ display:block; }
-
-  .nav-link--sub{
-    padding:12px 16px 12px 40px;
-    font-size:.9rem;
-    min-height:auto;
-  }
-
-  /* Sub-submenu */
-  .nav-link--sub2{
-    padding:10px 16px 10px 64px;
-    font-size:.88rem;
-    min-height:auto;
-    opacity:.98;
-  }
-
-  /* Rótulos sem ação (Eventos) */
-  .nav-label{
-    display:flex; align-items:center; gap:.6rem;
-    color:rgba(255,255,255,.92);
-    padding:16px;
-    font-size:.98rem; line-height:1;
-    cursor:default; user-select:none;
-  }
-  .nav-label i{ font-size:1.35rem; width:1.35rem }
-
-  /* ✅ Conteúdo (sem “moldura” / sem padding) */
-  .content{
-    margin-left:17em;
-    min-height:100vh;
-    padding:0;
-    background:var(--content-bg);
-  }
-
-  /* ✅ Hero ocupando a viewport inteira */
-  .hero{
-    width:100%;
-    height:100vh;
-    background:var(--content-bg);
-    overflow:hidden; /* evita qualquer linha por arredondamento */
-  }
-  /* Mobile moderno (evita bug de 100vh em alguns browsers) */
-  @supports (height: 100svh){
-    .hero{ height:100svh; }
-  }
-
-  .hero img{
-    width:100%;
-    height:100%;
-    display:block;
-    background:var(--content-bg);
-
-    /* ✅ principal: não fica “centralizado” verticalmente; encosta em cima */
-    object-fit:var(--hero-fit);
-    object-position:var(--hero-position);
-  }
-
-  /* Scroll fino na barra lateral */
-  .sidebar-nav{scrollbar-width:thin; scrollbar-color:#465462 transparent}
-  .sidebar-nav::-webkit-scrollbar{width:8px}
-  .sidebar-nav::-webkit-scrollbar-thumb{background:#465462;border-radius:8px}
-  .sidebar-nav::-webkit-scrollbar-track{background:transparent}
-</style>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Guia Cadastro Clube de Gestão — Sankhya ABC Paulista</title>
+  <style>
+    :root{
+      --bg:#f5f3e7;
+      --panel:#fffdf5;
+      --ink:#2f2a2b;
+      --muted:#645c5d;
+      --brand:#66cc00;
+      --brand-dark:#448d00;
+      --blue:#0099ff;
+      --line:#ddd7bf;
+      --danger:#b42318;
+      --warning:#a15c00;
+      --shadow:0 16px 36px rgba(15,23,42,.10);
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
+      color:var(--ink);
+      background:linear-gradient(180deg,#f8f6ea 0%,var(--bg) 100%);
+    }
+    header{
+      background:#19222a;
+      color:#fff;
+      padding:26px 34px;
+      border-bottom:6px solid var(--brand);
+    }
+    header .eyebrow{
+      color:#b7ff77;
+      text-transform:uppercase;
+      letter-spacing:.10em;
+      font-size:12px;
+      font-weight:800;
+      margin:0 0 8px;
+    }
+    header h1{
+      margin:0;
+      font-size:30px;
+      line-height:1.08;
+    }
+    header p{
+      margin:10px 0 0;
+      max-width:1050px;
+      color:#dfe7ef;
+      font-size:15px;
+      line-height:1.45;
+    }
+    .wrap{
+      max-width:1180px;
+      margin:0 auto;
+      padding:24px 22px 50px;
+    }
+    .grid{
+      display:grid;
+      grid-template-columns:repeat(3,minmax(0,1fr));
+      gap:14px;
+    }
+    .grid-2{
+      display:grid;
+      grid-template-columns:1.1fr .9fr;
+      gap:16px;
+    }
+    @media(max-width:900px){.grid,.grid-2{grid-template-columns:1fr}}
+    .card{
+      background:var(--panel);
+      border:1px solid var(--line);
+      border-radius:18px;
+      box-shadow:var(--shadow);
+      padding:18px 20px;
+      margin:14px 0;
+    }
+    h2{
+      margin:0 0 10px;
+      font-size:20px;
+      letter-spacing:.02em;
+    }
+    h3{
+      margin:16px 0 8px;
+      font-size:16px;
+      color:var(--brand-dark);
+      text-transform:uppercase;
+      letter-spacing:.04em;
+    }
+    p,li,td,th{
+      font-size:14px;
+      line-height:1.48;
+    }
+    p{margin:8px 0;color:var(--ink)}
+    ul,ol{margin:8px 0 0 20px;padding:0}
+    li{margin:6px 0}
+    strong{font-weight:800}
+    .note{
+      border-left:5px solid var(--brand);
+      background:#eef9e5;
+      padding:12px 14px;
+      border-radius:12px;
+      margin:12px 0;
+    }
+    .note.warning{border-left-color:#f59e0b;background:#fff6df}
+    .note.danger{border-left-color:var(--danger);background:#fff1f0}
+    .kpi{
+      background:#fff;
+      border:1px solid #e7e0c6;
+      border-radius:14px;
+      padding:14px;
+    }
+    .kpi span{
+      display:block;
+      color:var(--muted);
+      font-size:12px;
+      text-transform:uppercase;
+      letter-spacing:.06em;
+      font-weight:800;
+    }
+    .kpi strong{
+      display:block;
+      font-size:21px;
+      margin-top:4px;
+    }
+    table{
+      width:100%;
+      border-collapse:collapse;
+      overflow:hidden;
+      border-radius:12px;
+      background:#fff;
+      margin-top:10px;
+    }
+    th,td{
+      border:1px solid #d8d1b7;
+      padding:10px;
+      vertical-align:top;
+      text-align:left;
+    }
+    th{
+      background:#fff0c5;
+      font-weight:800;
+    }
+    .timeline{
+      display:grid;
+      gap:10px;
+    }
+    .step{
+      display:grid;
+      grid-template-columns:46px 1fr;
+      gap:12px;
+      align-items:start;
+      background:#fff;
+      border:1px solid #e4ddc4;
+      border-radius:14px;
+      padding:12px;
+    }
+    .num{
+      width:36px;height:36px;border-radius:50%;
+      background:var(--brand);
+      color:#fff;
+      display:flex;align-items:center;justify-content:center;
+      font-weight:900;
+    }
+    .step h3{margin:0 0 4px;font-size:15px;color:#1f2937;text-transform:none;letter-spacing:0}
+    .step p{margin:4px 0;color:var(--muted)}
+    .code{
+      white-space:pre-wrap;
+      background:#111827;
+      color:#edf2f7;
+      border-radius:14px;
+      padding:14px;
+      font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+      font-size:12px;
+      line-height:1.45;
+      overflow:auto;
+    }
+    .pill{
+      display:inline-block;
+      padding:5px 10px;
+      border-radius:999px;
+      background:#eef9e5;
+      color:#2d5b00;
+      border:1px solid #c7e8aa;
+      font-size:12px;
+      font-weight:800;
+      margin:4px 4px 0 0;
+    }
+    .btns{display:flex;flex-wrap:wrap;gap:10px;margin-top:12px}
+    a.btn{
+      display:inline-block;
+      color:#0f172a;
+      background:#fff;
+      border:1px solid #cfd8e3;
+      border-radius:999px;
+      padding:10px 14px;
+      text-decoration:none;
+      font-weight:800;
+      font-size:13px;
+    }
+    a.btn:hover{background:#f1f5f9}
+  </style>
 </head>
 <body>
+  <header>
+    <p class="eyebrow">Sankhya ABC Paulista • CS/CX • Clube de Gestão</p>
+    <h1>Guia operacional para cadastro, pré-aprovação, convite e aprovação definitiva</h1>
+    <p>Use este guia sempre que for cadastrar um cliente no Clube de Gestão. O objetivo é evitar perda de prazo, respostas genéricas, cadastro incompleto e falta de aceite do cliente antes da aprovação final.</p>
+  </header>
 
-<section class="app">
-  <aside class="sidebar">
-    <header>Menu</header>
+  <main class="wrap">
+    <section class="grid">
+      <div class="kpi"><span>Data limite para envio</span><strong>Até dia 20</strong><p>Enviar pré-cadastro completo para a Matriz.</p></div>
+      <div class="kpi"><span>Análise Matriz</span><strong>Dia 15 a 22</strong><p>Período de análise, retorno e pedido de ajustes.</p></div>
+      <div class="kpi"><span>Meta</span><strong>Só conta aprovado</strong><p>Pré-cadastro não basta; precisa aprovação definitiva no Clube.</p></div>
+    </section>
 
-    <!-- Barra de pesquisa -->
-    <div class="sidebar-search">
-      <div class="sidebar-search-inner">
-        <i class="ion-search"></i>
-        <input id="nav-search" type="text" placeholder="Pesquisar fluxos..." autocomplete="off" />
+    <section class="card">
+      <h2>Resumo executivo do processo</h2>
+      <div class="note danger"><strong>Regra principal:</strong> não trate o cadastro como simples preenchimento de tela. O cadastro vira uma base de cliente referência para a Sankhya inteira, por isso precisa ter dados, contexto, evidências e respostas completas.</div>
+      <p>O processo correto é: <strong>qualificar cliente</strong>, <strong>ajustar segmentação</strong>, <strong>preencher cadastro com riqueza de detalhes</strong>, <strong>acionar envio para análise da Matriz</strong>, <strong>acompanhar retorno</strong>, <strong>corrigir ajustes</strong>, <strong>convidar cliente após pré-aprovação</strong>, <strong>registrar aceite</strong> e aguardar <strong>aprovação definitiva pela Matriz</strong>.</p>
+      <p><span class="pill">CS Unidade</span><span class="pill">CS Matriz</span><span class="pill">Marketing/Comercial</span><span class="pill">Cliente referência</span></p>
+    </section>
+
+    <section class="card">
+      <h2>Prazos do ciclo mensal</h2>
+      <table>
+        <thead><tr><th>Ação</th><th>Data</th><th>Responsável</th><th>O que fazer na prática</th></tr></thead>
+        <tbody>
+          <tr><td>Envio dos pré-cadastros</td><td>Até o dia 20 de cada mês</td><td>CS Unidade</td><td>Preencher todo o cadastro, revisar respostas, ajustar segmentação e acionar o envio para a Matriz.</td></tr>
+          <tr><td>Análise dos pré-cadastros</td><td>Do dia 15 ao dia 22 de cada mês</td><td>CS Matriz</td><td>Aguardar análise, mas acompanhar de perto para não perder prazo.</td></tr>
+          <tr><td>Retorno da análise: aprovação ou solicitação de ajustes</td><td>Do dia 15 ao dia 22 de cada mês</td><td>CS Matriz e CS Unidade</td><td>Se houver ajustes, corrigir no mesmo dia. Resposta genérica tende a voltar.</td></tr>
+          <tr><td>Convite ao cliente</td><td>Do dia 22 ao dia 26 de cada mês</td><td>CS Unidade</td><td>Somente após pré-aprovação. Enviar convite por e-mail e pedir aceite formal do cliente.</td></tr>
+          <tr><td>Aprovação do cliente para o Clube de Gestão</td><td>A partir do dia 26 até o último dia do mês</td><td>CS Matriz</td><td>A Matriz realiza a aprovação definitiva. Somente o cliente aprovado no Clube conta para a meta.</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="grid-2">
+      <div class="card">
+        <h2>Passo a passo da próxima vez</h2>
+        <div class="timeline">
+          <div class="step"><div class="num">1</div><div><h3>Escolher cliente candidato</h3><p>Priorize cliente com bom relacionamento, NPS/saúde favorável, uso consistente do Sankhya, história de valor e abertura para falar com prospects, gravar case, receber visita ou participar de evento.</p></div></div>
+          <div class="step"><div class="num">2</div><div><h3>Validar se o segmento está correto</h3><p>Antes do cadastro, conferir a tela <strong>Segmentação Parceiros</strong>. Se estiver como <strong>A CLASSIFICAR</strong>, ajustar para o segmento correto, como Serviços, Varejo, Indústria ou Atacado/Distribuidor.</p></div></div>
+          <div class="step"><div class="num">3</div><div><h3>Preencher a aba Geral</h3><p>Conferir dados do cliente, MRR, classificação, contrato, NPS, flags de aceite e campos de controle. Não marcar aceite, boas-vindas ou aprovação antes da etapa correta.</p></div></div>
+          <div class="step"><div class="num">4</div><div><h3>Preencher Informações Gerais</h3><p>Responder com profundidade: para quem vende, segmentos atendidos, indicadores, fóruns de gestão, comportamento de faturamento, canais de venda, integração, margem, precificação, aderência ao backoffice e ganhos reais.</p></div></div>
+          <div class="step"><div class="num">5</div><div><h3>Preencher abas de segmento</h3><p>Se o cliente for Serviços e a tela tiver Varejo/Indústria/Atacado, não inventar operação. Registrar “não se aplica” com contexto quando a pergunta não fizer sentido para o segmento.</p></div></div>
+          <div class="step"><div class="num">6</div><div><h3>Revisar respostas antes de enviar</h3><p>Trocar frases genéricas por respostas completas. Exemplo ruim: “muito aderente ao sistema”. Exemplo bom: explicar quais processos rodam no Sankhya, quais módulos, quais indicadores, quais ganhos e quais rotinas de fechamento.</p></div></div>
+          <div class="step"><div class="num">7</div><div><h3>Salvar e acionar envio para análise</h3><p>Após preencher, salvar e usar a ação/botão de envio para a Matriz, quando disponível na tela. Atenção ao botão de ação/raio: apenas salvar pode não enviar para análise.</p></div></div>
+          <div class="step"><div class="num">8</div><div><h3>Acompanhar análise com a Matriz</h3><p>Entre dia 15 e 22, acompanhar retorno. Se a Matriz pedir ajuste, corrigir rápido e pedir nova validação.</p></div></div>
+          <div class="step"><div class="num">9</div><div><h3>Convidar cliente após pré-aprovação</h3><p>Após pré-aprovação, enviar e-mail ao cliente explicando o Clube de Gestão e pedir resposta formal com aceite.</p></div></div>
+          <div class="step"><div class="num">10</div><div><h3>Registrar aceite e aguardar aprovação definitiva</h3><p>Com o aceite do cliente, marcar <strong>Convite Aceito</strong> ou acionar a Matriz se o campo estiver bloqueado. Depois a Matriz aprova definitivamente pelo botão <strong>Cliente Aprovado pela Matriz para o Clube de Gestão</strong>.</p></div></div>
+        </div>
       </div>
-    </div>
 
-    <nav class="sidebar-nav">
-      <ul>
-        <!-- Fluxo AE (com submenu) -->
-        <li class="has-sub">
-          <button class="nav-link nav-toggle" type="button">
-            <i class="ion-ios-analytics"></i>
-            <span class="nav-text">Fluxo AE</span>
-            <i class="ion-chevron-right sub-arrow"></i>
-          </button>
+      <div class="card">
+        <h2>Checklist de qualidade do cadastro</h2>
+        <ul>
+          <li>Cliente tem segmento correto na <strong>Segmentação Parceiros</strong>.</li>
+          <li>Cadastro enviado até o <strong>dia 20</strong>.</li>
+          <li>Respostas não estão genéricas.</li>
+          <li>Foi explicado <strong>por que o cliente é referência</strong>.</li>
+          <li>Foram citados processos reais dentro do Sankhya: Contratos, Financeiro, Fiscal, Estoque, Serviços, Backoffice etc.</li>
+          <li>Foram citados ganhos: fluxo de caixa, capital de giro, organização de contratos, redução de controles paralelos, indicadores personalizados.</li>
+          <li>Foram informadas lacunas quando não houver confirmação: data de fechamento contábil, fórum de gestão, representatividade no faturamento, entre outros.</li>
+          <li>Convite só foi feito depois da pré-aprovação.</li>
+          <li>Cliente respondeu aceite por e-mail.</li>
+          <li>Convite aceito foi marcado na tela ou solicitado à Matriz.</li>
+        </ul>
+        <div class="note warning"><strong>Importante:</strong> se um campo estiver bloqueado, não assumir que o processo travou. Validar com a Matriz se a ação precisa ser feita por eles.</div>
+      </div>
+    </section>
 
-          <ul class="subnav">
-            <li>
-              <a class="nav-link nav-link--sub"
-                 href="https://germaninho.github.io/fluxo-ae-cscx-sankhya-abc-paulista/">
-                Fluxo AE
-              </a>
-            </li>
+    <section class="card">
+      <h2>Como responder os campos críticos</h2>
+      <table>
+        <thead><tr><th>Campo/pergunta</th><th>Resposta precisa conter</th><th>Evitar</th></tr></thead>
+        <tbody>
+          <tr><td>Aderência ao Backoffice / ERP</td><td>Módulos usados, processos no Sankhya, fechamento contábil/fiscal se validado, indicadores, rotinas e ganhos.</td><td>“Muito aderente ao sistema”.</td></tr>
+          <tr><td>Em qual processo o cliente é referência?</td><td>Processo principal, como Contratos, Financeiro e Serviços; explicar o valor para outro cliente/prospect.</td><td>Listar só “Serviço; Contratos; Financeiro”.</td></tr>
+          <tr><td>Clientes do cliente / segmentos atendidos</td><td>Para quem vende, principais segmentos, empresas referência se conhecidas e representatividade somente se confirmada.</td><td>Inventar clientes ou percentuais.</td></tr>
+          <tr><td>Gestão por indicadores</td><td>Indicadores utilizados, se são nativos ou personalizados, periodicidade e fórum de discussão.</td><td>Dizer que tem gestão por indicadores sem exemplos.</td></tr>
+          <tr><td>Multifiliais / faturamento</td><td>Se concentra em uma empresa ou distribui entre várias, somente quando confirmado com cliente.</td><td>Assumir estrutura societária pelo site.</td></tr>
+          <tr><td>SKU / produtos</td><td>Quantidade real de SKUs quando validada. Se não houver confirmação, informar “a validar”.</td><td>Colocar ponto, traço ou número sem base.</td></tr>
+        </tbody>
+      </table>
+    </section>
 
-            <li>
-              <a class="nav-link nav-link--sub"
-                 href="https://docs.google.com/spreadsheets/d/1iet4QlnjAJpPUBYi3jb_RQrmM0ceo3ey/edit?gid=1120189956#gid=1120189956"
-                 target="_blank" rel="noopener noreferrer">
-                AE - Agenda x Meta x Realizado
-              </a>
-            </li>
-          </ul>
-        </li>
+    <section class="grid-2">
+      <div class="card">
+        <h2>Modelo de convite ao cliente</h2>
+        <p>Enviar somente após a pré-aprovação interna/Matriz.</p>
+        <div class="code">Assunto: Convite para participação no Clube de Gestão Sankhya
 
-        <!-- Fluxo Blitz NPS (com submenu) -->
-        <li class="has-sub">
-          <button class="nav-link nav-toggle" type="button">
-            <i class="ion-ios-pulse-strong"></i>
-            <span class="nav-text">Fluxo Blitz NPS</span>
-            <i class="ion-chevron-right sub-arrow"></i>
-          </button>
+Olá, [Nome do Cliente], tudo bem?
 
-          <ul class="subnav">
-            <li>
-              <a class="nav-link nav-link--sub"
-                 href="https://germaninho.github.io/fluxo-nps-blitz-cscx-sankhya-abc-paulista/">
-                Fluxo Blitz NPS
-              </a>
-            </li>
+Gostaríamos de convidar a [Nome da Empresa] para participar do Clube de Gestão Sankhya, um programa de relacionamento voltado a clientes referência, que contribuem de forma voluntária em ações como troca de experiências, cases, depoimentos, interações com prospects e eventos.
 
-            <li class="has-sub">
-              <button class="nav-link nav-link--sub nav-toggle" type="button">
-                <span class="nav-text">Monitoramento NPS — Plano de Ação</span>
-                <i class="ion-chevron-right sub-arrow"></i>
-              </button>
+A participação no programa permite o acúmulo de pontos, que podem ser trocados por recompensas conforme as regras do Clube.
 
-              <ul class="subnav">
-                <li>
-                  <a class="nav-link nav-link--sub2"
-                     href="https://germaninho.github.io/fluxo-nps-blitz-cscx-sankhya-abc-paulista/#monitoramento-nps-sintese">
-                    Síntese do Plano de Ação NPS
-                  </a>
-                </li>
-              </ul>
-            </li>
+Caso estejam de acordo em participar, peço por gentileza que respondam este e-mail com o aceite:
 
-            <li class="has-sub">
-              <button class="nav-link nav-link--sub nav-toggle" type="button">
-                <span class="nav-text">Fechamento de Loop NPS Detratores</span>
-                <i class="ion-chevron-right sub-arrow"></i>
-              </button>
+“Estou de acordo com a participação da [Nome da Empresa] no Clube de Gestão Sankhya.”
 
-              <ul class="subnav">
-                <li>
-                  <a class="nav-link nav-link--sub2"
-                     href="https://germaninho.github.io/fluxo-nps-blitz-cscx-sankhya-abc-paulista/#loop-detratores-entendimento">
-                    Entendimento do cenário e Contato Inicial
-                  </a>
-                </li>
-                <li>
-                  <a class="nav-link nav-link--sub2"
-                     href="https://germaninho.github.io/fluxo-nps-blitz-cscx-sankhya-abc-paulista/#loop-detratores-montagem">
-                    Montagem e Execução do Plano
-                  </a>
-                </li>
-                <li>
-                  <a class="nav-link nav-link--sub2"
-                     href="https://germaninho.github.io/fluxo-nps-blitz-cscx-sankhya-abc-paulista/#loop-detratores-colaboracao">
-                    Plano de Execução com Colaboração de Outras Áreas
-                  </a>
-                </li>
-                <li>
-                  <a class="nav-link nav-link--sub2"
-                     href="https://germaninho.github.io/fluxo-nps-blitz-cscx-sankhya-abc-paulista/#loop-detratores-followup">
-                    Plano de Follow-up pós Plano de Ação
-                  </a>
-                </li>
-              </ul>
-            </li>
+Fico à disposição para qualquer dúvida.
 
-            <li class="has-sub">
-              <button class="nav-link nav-link--sub nav-toggle" type="button">
-                <span class="nav-text">Fluxo Indicador NPS</span>
-                <i class="ion-chevron-right sub-arrow"></i>
-              </button>
+Atenciosamente,
+[Seu nome]
+Sankhya ABC Paulista</div>
+      </div>
 
-              <ul class="subnav">
-                <li>
-                  <a class="nav-link nav-link--sub2"
-                     href="https://docs.google.com/spreadsheets/d/1zR1gsOBuOQ0VHiw-Pkb57LcY3Au-0GTH/edit?gid=1470696139#gid=1470696139"
-                     target="_blank" rel="noopener noreferrer">
-                    2023
-                  </a>
-                </li>
-                <li>
-                  <a class="nav-link nav-link--sub2"
-                     href="https://docs.google.com/spreadsheets/d/1Ekcj-2FSZes0qPc3DZjoAQG-D1aZ0pzS/edit?gid=1470696139#gid=1470696139"
-                     target="_blank" rel="noopener noreferrer">
-                    2024
-                  </a>
-                </li>
-                <li>
-                  <a class="nav-link nav-link--sub2"
-                     href="https://docs.google.com/spreadsheets/d/1iDq4iY8Ja0KJq7t6F2J-4m3-iDQMctpr/edit?gid=1612811400#gid=1612811400"
-                     target="_blank" rel="noopener noreferrer">
-                    2025
-                  </a>
-                </li>
-                <li>
-                  <a class="nav-link nav-link--sub2"
-                     href="https://docs.google.com/spreadsheets/d/1BCYydiispqHyBBKPyPYMAmrY5dJ-31N-/edit?gid=1612811400#gid=1612811400"
-                     target="_blank" rel="noopener noreferrer">
-                    2026
-                  </a>
-                </li>
-              </ul>
-            </li>
+      <div class="card">
+        <h2>Modelo de registro interno</h2>
+        <div class="code">Cliente pré-cadastrado para avaliação de aderência ao Clube de Gestão.
 
-          </ul>
-        </li>
+Resumo da aderência: [explicar processos, módulos, ganhos e indicadores].
 
-        <!-- Fluxo Clube de Gestão (com submenu) -->
-        <li class="has-sub">
-          <button class="nav-link nav-toggle" type="button">
-            <i class="ion-document-text"></i>
-            <span class="nav-text">Fluxo Clube de Gestão</span>
-            <i class="ion-chevron-right sub-arrow"></i>
-          </button>
+Status: pré-cadastro enviado para análise da Matriz.
 
-          <ul class="subnav">
-            <li>
-              <a class="nav-link nav-link--sub"
-                 href="PPT%20CS%20%28Interno%29.pptx"
-                 target="_blank" rel="noopener noreferrer">
-                PTT - Interno Clube de Gestão
-              </a>
-            </li>
-            <li>
-              <a class="nav-link nav-link--sub"
-                 href="Template%20Apresenta%C3%A7%C3%A3o%20-%20Clube%20de%20Gest%C3%A3o%20%28Cliente%29.pptx"
-                 target="_blank" rel="noopener noreferrer">
-                PTT - Externo Clube de Gestão
-              </a>
-            </li>
-            <li>
-              <a class="nav-link nav-link--sub"
-                 href="Manual%20do%20Cliente-%20Clube%20De%20Gest%C3%A3o%20Sankhya.docx"
-                 target="_blank" rel="noopener noreferrer">
-                Manual do Cliente
-              </a>
-            </li>
-            <li>
-              <a class="nav-link nav-link--sub"
-                 href="Uso%20Interno%20Sankhya%20-%20Clube%20De%20Gest%C3%A3o%20Sankhya%20%E2%80%93%20Pol%C3%ADticas%20e%20Regulamento.docx"
-                 target="_blank" rel="noopener noreferrer">
-                Manual Interno Sankhya
-              </a>
-            </li>
-          </ul>
-        </li>
+Após pré-aprovação: cliente será convidado por e-mail e o aceite será registrado na tela antes da aprovação definitiva.</div>
+        <div class="note"><strong>Meta:</strong> acompanhar até a aprovação definitiva. Não encerrar o acompanhamento apenas com o pré-cadastro.</div>
+      </div>
+    </section>
 
-        <!-- Fluxo Certificação -->
-        <li>
-          <a class="nav-link" href="https://germaninho.github.io/fluxo-certificacao/">
-            <i class="ion-ribbon-b"></i>
-            <span class="nav-text">Fluxo Certificação</span>
-          </a>
-        </li>
-
-        <!-- Fluxo de Usuários Temporários -->
-        <li>
-          <a class="nav-link" href="https://germaninho.github.io/fluxo-usuarios-temporarios-sankhya-abc-paulista/">
-            <i class="ion-person-stalker"></i>
-            <span class="nav-text">Fluxo de Usuários Temporários</span>
-          </a>
-        </li>
-
-        <!-- Fluxo Eventos (sem ação) -->
-        <li>
-          <span class="nav-label">
-            <i class="ion-ios-settings"></i> Fluxo Eventos
-          </span>
-        </li>
-
-        <!-- Gerente Online - GOL -->
-        <li>
-          <a class="nav-link" href="https://germaninho.github.io/fluxo-gerente-online-gol-sankhya-abc-paulista/">
-            <i class="ion-android-desktop"></i>
-            <span class="nav-text">Gerente Online - GOL</span>
-          </a>
-        </li>
-
-        <!-- Hub - Comercial (com submenu) -->
-        <li class="has-sub">
-          <button class="nav-link nav-toggle" type="button">
-            <i class="ion-briefcase"></i>
-            <span class="nav-text">Hub - Comercial</span>
-            <i class="ion-chevron-right sub-arrow"></i>
-          </button>
-
-          <ul class="subnav">
-            <li>
-              <a class="nav-link nav-link--sub"
-                 href="https://sites.google.com/sankhya.com.br/portal-inteligencia-sankhya/gmo-sankhya?authuser=2"
-                 target="_blank" rel="noopener noreferrer">
-                GMO - Guia da Melhor Oferta
-              </a>
-            </li>
-            <li>
-              <a class="nav-link nav-link--sub"
-                 href="https://sites.google.com/sankhya.com.br/battlecard?pli=1&authuser=2"
-                 target="_blank" rel="noopener noreferrer">
-                Battlecard ERP
-              </a>
-            </li>
-            <li>
-              <a class="nav-link nav-link--sub"
-                 href="https://sites.google.com/sankhya.com.br/battlecardfolha?pli=1&authuser=2"
-                 target="_blank" rel="noopener noreferrer">
-                Battlecard Folha
-              </a>
-            </li>
-            <li>
-              <a class="nav-link nav-link--sub"
-                 href="https://go.sankhya.com.br/cases/"
-                 target="_blank" rel="noopener noreferrer">
-                Cases Sankhya
-              </a>
-            </li>
-            <li>
-              <a class="nav-link nav-link--sub"
-                 href="https://produtos.sankhya.com.br/"
-                 target="_blank" rel="noopener noreferrer">
-                Novidades Sankhya
-              </a>
-            </li>
-            <li>
-              <a class="nav-link nav-link--sub"
-                 href="https://www.sankhya.com.br/sobre-a-sankhya/eventos-sankhya-erp/"
-                 target="_blank" rel="noopener noreferrer">
-                Eventos Sankhya Clientes
-              </a>
-            </li>
-            <li>
-              <a class="nav-link nav-link--sub"
-                 href="https://emporiosankhya.beuni.com.br/?orderby=price-desc"
-                 target="_blank" rel="noopener noreferrer">
-                Empório Sankhya
-              </a>
-            </li>
-
-            <li>
-              <a class="nav-link nav-link--sub"
-                 href="https://docs.google.com/spreadsheets/d/1yBJdudMvufN-drM66FPzz4QbjbymSkHkCJzNFtI-_pU/edit?gid=0#gid=0"
-                 target="_blank" rel="noopener noreferrer">
-                White Space
-              </a>
-            </li>
-
-            <li>
-              <a class="nav-link nav-link--sub"
-                 href="Sankhya_RH_2026_Apresentacao_Completa.pptx"
-                 target="_blank" rel="noopener noreferrer">
-                BU HCM PPT
-              </a>
-            </li>
-
-            <!-- ERP Sankhya -->
-            <li class="has-sub">
-              <button class="nav-link nav-link--sub nav-toggle" type="button">
-                <span class="nav-text">ERP Sankhya</span>
-                <i class="ion-chevron-right sub-arrow"></i>
-              </button>
-              <ul class="subnav">
-                <li>
-                  <a class="nav-link nav-link--sub2"
-                     href="https://www.sankhya.com.br/software-de-gestao-erp/erp-para-gestao-empresarial/produtos/sankhya/"
-                     target="_blank" rel="noopener noreferrer">
-                    ERP
-                  </a>
-                </li>
-                <li>
-                  <a class="nav-link nav-link--sub2"
-                     href="https://www.sankhya.com.br/inteligencia-artificial/deploy-agent/"
-                     target="_blank" rel="noopener noreferrer">
-                    Deploy
-                  </a>
-                </li>
-                <li>
-                  <a class="nav-link nav-link--sub2"
-                     href="https://www.sankhya.com.br/inteligencia-artificial/bia/"
-                     target="_blank" rel="noopener noreferrer">
-                    BIA
-                  </a>
-                </li>
-              </ul>
-            </li>
-
-            <!-- Sankhya Analytics AI -->
-            <li class="has-sub">
-              <button class="nav-link nav-link--sub nav-toggle" type="button">
-                <span class="nav-text">Sankhya Analytics AI</span>
-                <i class="ion-chevron-right sub-arrow"></i>
-              </button>
-              <ul class="subnav">
-                <li>
-                  <a class="nav-link nav-link--sub2"
-                     href="https://www.sankhya.com.br/inteligencia-artificial/analytics-ai/"
-                     target="_blank" rel="noopener noreferrer">
-                    Analytics AI
-                  </a>
-                </li>
-              </ul>
-            </li>
-
-            <!-- Sankhya Sign -->
-            <li class="has-sub">
-              <button class="nav-link nav-link--sub nav-toggle" type="button">
-                <span class="nav-text">Sankhya Sign</span>
-                <i class="ion-chevron-right sub-arrow"></i>
-              </button>
-              <ul class="subnav">
-                <li>
-                  <a class="nav-link nav-link--sub2"
-                     href="Sankhya%20Sign%20%29.pdf"
-                     target="_blank" rel="noopener noreferrer">
-                    Apresentação
-                  </a>
-                </li>
-              </ul>
-            </li>
-
-            <!-- Sankhya Benéficos -->
-            <li class="has-sub">
-              <button class="nav-link nav-link--sub nav-toggle" type="button">
-                <span class="nav-text">Sankhya Benéficos</span>
-                <i class="ion-chevron-right sub-arrow"></i>
-              </button>
-              <ul class="subnav">
-                <li>
-                  <a class="nav-link nav-link--sub2"
-                     href="https://sites.google.com/sankhya.com.br/manualdevalor/sankhya-despesas?authuser=1&pli=1"
-                     target="_blank" rel="noopener noreferrer">
-                    Manual de Valor
-                  </a>
-                </li>
-                <li>
-                  <a class="nav-link nav-link--sub2"
-                     href="https://www.sankhya.com.br/software-de-gestao-erp/erp-para-gestao-empresarial/produtos/espresso/"
-                     target="_blank" rel="noopener noreferrer">
-                    Espresso
-                  </a>
-                </li>
-                <li>
-                  <a class="nav-link nav-link--sub2"
-                     href="Apresentação Sankhya Benefícios.pdf"
-                     target="_blank" rel="noopener noreferrer">
-                    Apresentação
-                  </a>
-                </li>
-              </ul>
-            </li>
-
-            <!-- Sankhya Despesas -->
-            <li class="has-sub">
-              <button class="nav-link nav-link--sub nav-toggle" type="button">
-                <span class="nav-text">Sankhya Despesas</span>
-                <i class="ion-chevron-right sub-arrow"></i>
-              </button>
-              <ul class="subnav">
-                <li>
-                  <a class="nav-link nav-link--sub2"
-                     href="https://sites.google.com/sankhya.com.br/manualdevalor/sankhya-despesas?authuser=1&pli=1"
-                     target="_blank" rel="noopener noreferrer">
-                    Manual de Valor
-                  </a>
-                </li>
-                <li>
-                  <a class="nav-link nav-link--sub2"
-                     href="https://www.sankhya.com.br/software-de-gestao-erp/erp-para-gestao-empresarial/produtos/espresso/"
-                     target="_blank" rel="noopener noreferrer">
-                    Espresso
-                  </a>
-                </li>
-              </ul>
-            </li>
-
-            <!-- Sankhya Flowbiz -->
-            <li class="has-sub">
-              <button class="nav-link nav-link--sub nav-toggle" type="button">
-                <span class="nav-text">Sankhya Flowbiz</span>
-                <i class="ion-chevron-right sub-arrow"></i>
-              </button>
-              <ul class="subnav">
-                <li>
-                  <a class="nav-link nav-link--sub2"
-                     href="https://sites.google.com/sankhya.com.br/manualdevalor/flowbiz?pli=1&authuser=1"
-                     target="_blank" rel="noopener noreferrer">
-                    Manual de Valor
-                  </a>
-                </li>
-                <li>
-                  <a class="nav-link nav-link--sub2"
-                     href="https://www.sankhya.com.br/software-de-gestao-erp/erp-para-gestao-de-vendas/produtos/flowbiz/"
-                     target="_blank" rel="noopener noreferrer">
-                    Flowbiz
-                  </a>
-                </li>
-              </ul>
-            </li>
-
-            <!-- Sankhya Lincros -->
-            <li class="has-sub">
-              <button class="nav-link nav-link--sub nav-toggle" type="button">
-                <span class="nav-text">Sankhya Lincros</span>
-                <i class="ion-chevron-right sub-arrow"></i>
-              </button>
-              <ul class="subnav">
-                <li>
-                  <a class="nav-link nav-link--sub2"
-                     href="https://www.sankhya.com.br/software-de-gestao-erp/erp-para-gestao-empresarial/produtos/lincros/"
-                     target="_blank" rel="noopener noreferrer">
-                    Lincros
-                  </a>
-                </li>
-              </ul>
-            </li>
-
-            <!-- Sankhya Meetime -->
-            <li class="has-sub">
-              <button class="nav-link nav-link--sub nav-toggle" type="button">
-                <span class="nav-text">Sankhya Meetime</span>
-                <i class="ion-chevron-right sub-arrow"></i>
-              </button>
-              <ul class="subnav">
-                <li>
-                  <a class="nav-link nav-link--sub2"
-                     href="https://sites.google.com/sankhya.com.br/manualdevalor/meetime?authuser=1&pli=1"
-                     target="_blank" rel="noopener noreferrer">
-                    Manual de Valor
-                  </a>
-                </li>
-                <li>
-                  <a class="nav-link nav-link--sub2"
-                     href="https://www.sankhya.com.br/software-de-gestao-erp/erp-para-gestao-de-vendas/produtos/meetime/"
-                     target="_blank" rel="noopener noreferrer">
-                    Meetime
-                  </a>
-                </li>
-              </ul>
-            </li>
-
-            <!-- Sankhya Mindsights -->
-            <li class="has-sub">
-              <button class="nav-link nav-link--sub nav-toggle" type="button">
-                <span class="nav-text">Sankhya Mindsights</span>
-                <i class="ion-chevron-right sub-arrow"></i>
-              </button>
-              <ul class="subnav">
-                <li>
-                  <a class="nav-link nav-link--sub2"
-                     href="https://www.sankhya.com.br/software-de-gestao-erp/erp-para-gestao-de-pessoas/produtos/mindsight/"
-                     target="_blank" rel="noopener noreferrer">
-                    Mindsights
-                  </a>
-                </li>
-                <li>
-                  <a class="nav-link nav-link--sub2"
-                     href="Apresentação Mindsight.pdf"
-                     target="_blank" rel="noopener noreferrer">
-                    Apresentação
-                  </a>
-                </li>
-              </ul>
-            </li>
-
-            <!-- Sankhya Neppo -->
-            <li class="has-sub">
-              <button class="nav-link nav-link--sub nav-toggle" type="button">
-                <span class="nav-text">Sankhya Neppo</span>
-                <i class="ion-chevron-right sub-arrow"></i>
-              </button>
-              <ul class="subnav">
-                <li>
-                  <a class="nav-link nav-link--sub2"
-                     href="https://sites.google.com/sankhya.com.br/manualdevalor/neppo?authuser=1&pli=1"
-                     target="_blank" rel="noopener noreferrer">
-                    Manual de Valor
-                  </a>
-                </li>
-                <li>
-                  <a class="nav-link nav-link--sub2"
-                     href="https://www.sankhya.com.br/software-de-gestao-erp/erp-para-gestao-de-vendas/produtos/neppo/"
-                     target="_blank" rel="noopener noreferrer">
-                    Neppo
-                  </a>
-                </li>
-              </ul>
-            </li>
-
-            <!-- Sankhya Pessoas+ -->
-            <li class="has-sub">
-              <button class="nav-link nav-link--sub nav-toggle" type="button">
-                <span class="nav-text">Sankhya Pessoas+</span>
-                <i class="ion-chevron-right sub-arrow"></i>
-              </button>
-              <ul class="subnav">
-                <li>
-                  <a class="nav-link nav-link--sub2"
-                     href="https://sites.google.com/sankhya.com.br/manualdevalor/sankhya-rh?authuser=1&pli=1"
-                     target="_blank" rel="noopener noreferrer">
-                    Manual de Valor
-                  </a>
-                </li>
-                <li>
-                  <a class="nav-link nav-link--sub2"
-                     href="https://www.sankhya.com.br/software-de-gestao-erp/erp-para-gestao-de-pessoas/produtos/pessoas-mais/"
-                     target="_blank" rel="noopener noreferrer">
-                    Pessoas+
-                  </a>
-                </li>
-                <li>
-                  <a class="nav-link nav-link--sub2"
-                     href="Apresentação PESSOAS+.pptx.pdf"
-                     target="_blank" rel="noopener noreferrer">
-                    Apresentação
-                  </a>
-                </li>
-              </ul>
-            </li>
-
-            <!-- Sankhya Ploomes -->
-            <li class="has-sub">
-              <button class="nav-link nav-link--sub nav-toggle" type="button">
-                <span class="nav-text">Sankhya Ploomes</span>
-                <i class="ion-chevron-right sub-arrow"></i>
-              </button>
-              <ul class="subnav">
-                <li>
-                  <a class="nav-link nav-link--sub2"
-                     href="https://sites.google.com/sankhya.com.br/manualdevalor/ploomes?authuser=1&pli=1"
-                     target="_blank" rel="noopener noreferrer">
-                    Manual de Valor
-                  </a>
-                </li>
-                <li>
-                  <a class="nav-link nav-link--sub2"
-                     href="https://www.sankhya.com.br/software-de-gestao-erp/erp-para-gestao-de-vendas/produtos/ploomes/"
-                     target="_blank" rel="noopener noreferrer">
-                    Ploomes
-                  </a>
-                </li>
-              </ul>
-            </li>
-
-            <!-- Sankhya Pontotel -->
-            <li class="has-sub">
-              <button class="nav-link nav-link--sub nav-toggle" type="button">
-                <span class="nav-text">Sankhya Pontotel</span>
-                <i class="ion-chevron-right sub-arrow"></i>
-              </button>
-              <ul class="subnav">
-                <li>
-                  <a class="nav-link nav-link--sub2"
-                     href="https://www.sankhya.com.br/software-de-gestao-erp/erp-para-gestao-de-pessoas/produtos/pontotel/"
-                     target="_blank" rel="noopener noreferrer">
-                    Pontotel
-                  </a>
-                </li>
-                <li>
-                  <a class="nav-link nav-link--sub2"
-                     href="Apresentação Pontotel.pptx.pdf"
-                     target="_blank" rel="noopener noreferrer">
-                    Apresentação
-                  </a>
-                </li>
-              </ul>
-            </li>
-
-            <!-- Sankhya SaaS -->
-            <li class="has-sub">
-              <button class="nav-link nav-link--sub nav-toggle" type="button">
-                <span class="nav-text">Sankhya SaaS</span>
-                <i class="ion-chevron-right sub-arrow"></i>
-              </button>
-              <ul class="subnav">
-                <li>
-                  <a class="nav-link nav-link--sub2"
-                     href="https://sites.google.com/sankhya.com.br/manualdevalor/sankhya-saas?authuser=1&pli=1"
-                     target="_blank" rel="noopener noreferrer">
-                    Manual de Valor
-                  </a>
-                </li>
-              </ul>
-            </li>
-
-            <!-- Sankhya TAX / Asis -->
-            <li class="has-sub">
-              <button class="nav-link nav-link--sub nav-toggle" type="button">
-                <span class="nav-text">Sankhya TAX / Asis</span>
-                <i class="ion-chevron-right sub-arrow"></i>
-              </button>
-              <ul class="subnav">
-                <li>
-                  <a class="nav-link nav-link--sub2"
-                     href="https://sites.google.com/sankhya.com.br/manualdevalor/sankhya-tax?authuser=1&pli=1"
-                     target="_blank" rel="noopener noreferrer">
-                    Manual de Valor
-                  </a>
-                </li>
-                <li>
-                  <a class="nav-link nav-link--sub2"
-                     href="https://www.sankhya.com.br/software-de-gestao-erp/erp-para-gestao-empresarial/produtos/asis/"
-                     target="_blank" rel="noopener noreferrer">
-                    Asis
-                  </a>
-                </li>
-              </ul>
-            </li>
-
-            <!-- Sankhya Vixting -->
-            <li class="has-sub">
-              <button class="nav-link nav-link--sub nav-toggle" type="button">
-                <span class="nav-text">Sankhya Vixting</span>
-                <i class="ion-chevron-right sub-arrow"></i>
-              </button>
-              <ul class="subnav">
-                <li>
-                  <a class="nav-link nav-link--sub2"
-                     href="https://www.sankhya.com.br/software-de-gestao-erp/erp-para-gestao-de-pessoas/produtos/vixting/"
-                     target="_blank" rel="noopener noreferrer">
-                    Vixting
-                  </a>
-                </li>
-                <li>
-                  <a class="nav-link nav-link--sub2"
-                     href="Apresentação Vixting.pptx.pdf"
-                     target="_blank" rel="noopener noreferrer">
-                    Apresentação
-                  </a>
-                </li>
-              </ul>
-            </li>
-
-          </ul>
-        </li>
-
-        <!-- Fluxo Indicadores da Campanha -->
-        <li>
-          <a class="nav-link"
-             href="https://docs.google.com/spreadsheets/d/1PNy9G4HqGH_rUAWJum4P1tJIG3ux3lnaion2uCsahpk/edit?gid=0#gid=0"
-             target="_blank" rel="noopener noreferrer">
-            <i class="ion-stats-bars"></i>
-            <span class="nav-text">Fluxo Indicadores da Campanha Consultor e Coordenador de Sucesso do Cliente</span>
-          </a>
-        </li>
-
-        <!-- Fluxo Licenciamento de Empresas -->
-        <li>
-          <a class="nav-link" href="https://germaninho.github.io/fluxo-os-revops-sankhya-abc-paulista/">
-            <i class="ion-thermometer"></i>
-            <span class="nav-text">Fluxo Licenciamento de Empresas</span>
-          </a>
-        </li>
-
-        <!-- Fluxo MRR x Churn -->
-        <li>
-          <a class="nav-link"
-             href="https://germaninho.github.io/fluxo-mrr-x-churn-cscx-sankhya-abc-paulista/">
-            <i class="ion-arrow-graph-up-right"></i>
-            <span class="nav-text">Fluxo MRR x Churn</span>
-          </a>
-        </li>
-
-        <!-- Fluxo Passagem de Bastão -->
-        <li>
-          <a class="nav-link" href="https://germaninho.github.io/fluxo-passagem-bastao-implantacao-base-cscx-sankhya-abc-paulista/">
-            <i class="ion-shuffle"></i>
-            <span class="nav-text">Fluxo Passagem de Bastão - Implantação &gt; Base</span>
-          </a>
-        </li>
-
-        <!-- Fluxo Pendencias -->
-        <li>
-          <a class="nav-link" href="https://germaninho.github.io/fluxo-pendencias-cscx-sankhya-abc-paulista/">
-            <i class="ion-bag"></i>
-            <span class="nav-text">Fluxo Pendencias</span>
-          </a>
-        </li>
-
-        <!-- Status Report - CS -->
-        <li>
-          <a class="nav-link"
-             href="https://docs.google.com/presentation/d/175DOG_OIwGhff8u86_JmQCBlVKoFO1_N/edit?slide=id.ge5f0f81c71_0_99#slide=id.ge5f0f81c71_0_99"
-             target="_blank" rel="noopener noreferrer">
-            <i class="ion-clipboard"></i>
-            <span class="nav-text">Status Report - CS</span>
-          </a>
-        </li>
-
-      </ul>
-    </nav>
-  </aside>
-
-  <main class="content">
-    <div class="hero">
-      <img
-        src="imagem-sankhya-adquiridas.png"
-        alt="Sankhya e adquiridas"
-        decoding="async"
-        loading="eager"
-      >
-    </div>
+    <section class="card">
+      <h2>Atalhos relacionados</h2>
+      <div class="btns">
+        <a class="btn" href="PPT%20CS%20%28Interno%29.pptx" target="_blank" rel="noopener noreferrer">PPT Interno Clube de Gestão</a>
+        <a class="btn" href="Template%20Apresenta%C3%A7%C3%A3o%20-%20Clube%20de%20Gest%C3%A3o%20%28Cliente%29.pptx" target="_blank" rel="noopener noreferrer">PPT Externo Clube de Gestão</a>
+        <a class="btn" href="Manual%20do%20Cliente-%20Clube%20De%20Gest%C3%A3o%20Sankhya.docx" target="_blank" rel="noopener noreferrer">Manual do Cliente</a>
+        <a class="btn" href="Uso%20Interno%20Sankhya%20-%20Clube%20De%20Gest%C3%A3o%20Sankhya%20%E2%80%93%20Pol%C3%ADticas%20e%20Regulamento.docx" target="_blank" rel="noopener noreferrer">Manual Interno</a>
+        <a class="btn" href="cases_unidade_sankhya_abc_paulista_2026.pptx" target="_blank" rel="noopener noreferrer">Cases Sankhya ABC Paulista</a>
+      </div>
+    </section>
   </main>
-</section>
-
-<script>
-(() => {
-  'use strict';
-
-  const $  = (sel, root=document) => root.querySelector(sel);
-  const $$ = (sel, root=document) => Array.from(root.querySelectorAll(sel));
-
-  const searchInput = $('#nav-search');
-
-  // ✅ Guardrail 1: garante aria-expanded/aria-controls em TODOS os toggles
-  function wireSubmenus() {
-    $$('.sidebar-nav li').forEach(li => {
-      const subnav = li.querySelector(':scope > ul.subnav');
-      const btn    = li.querySelector(':scope > button.nav-toggle');
-
-      if (subnav && btn) {
-        li.classList.add('has-sub');
-
-        if (!subnav.id) {
-          subnav.id = 'subnav-' + Math.random().toString(36).slice(2, 10);
-        }
-
-        btn.setAttribute('aria-controls', subnav.id);
-        btn.setAttribute('aria-expanded', li.classList.contains('open') ? 'true' : 'false');
-      }
-    });
-  }
-
-  function setOpen(li, open) {
-    li.classList.toggle('open', open);
-    const btn = li.querySelector(':scope > button.nav-toggle');
-    if (btn) btn.setAttribute('aria-expanded', open ? 'true' : 'false');
-  }
-
-  // ✅ Guardrail 2: toggle robusto (usa closest)
-  function bindToggles() {
-    $$('.nav-toggle').forEach(btn => {
-      btn.addEventListener('click', () => {
-        const li = btn.closest('li');
-        if (!li || !li.classList.contains('has-sub')) return;
-        setOpen(li, !li.classList.contains('open'));
-      });
-    });
-  }
-
-  // ✅ Guardrail 3: se tiver target="_blank" e esquecer rel, o script corrige
-  function normalizeBlankLinks() {
-    $$('a[target="_blank"]').forEach(a => {
-      const rel = (a.getAttribute('rel') || '').toLowerCase();
-      const needed = ['noopener', 'noreferrer'];
-      const finalRel = Array.from(new Set(rel.split(/\s+/).filter(Boolean).concat(needed))).join(' ');
-      a.setAttribute('rel', finalRel);
-    });
-  }
-
-  // ✅ Guardrail 4: busca sem “quebrar” menus + abre tudo durante pesquisa
-  function bindSearch() {
-    if (!searchInput) return;
-
-    let raf = 0;
-
-    const run = () => {
-      const q = searchInput.value.trim().toLowerCase();
-      const items   = $$('.sidebar-nav li');
-      const hasSubs = $$('.sidebar-nav li.has-sub');
-
-      items.forEach(li => {
-        const text = (li.textContent || '').toLowerCase();
-        li.style.display = (!q || text.includes(q)) ? '' : 'none';
-      });
-
-      hasSubs.forEach(li => setOpen(li, !!q));
-    };
-
-    searchInput.addEventListener('input', () => {
-      cancelAnimationFrame(raf);
-      raf = requestAnimationFrame(run);
-    });
-  }
-
-  // ✅ Guardrail 5: se a imagem quebrar, mostra o erro na tela
-  function heroImageFallback(img, hero) {
-    if (!img || !hero) return;
-
-    img.addEventListener('error', () => {
-      hero.innerHTML =
-        '<div style="color:#fff;font-weight:600;padding:24px;font-size:14px">' +
-        '⚠️ Imagem não encontrada: verifique se o arquivo <b>imagem-sankhya-adquiridas.png</b> está na mesma pasta do index.html.' +
-        '</div>';
-    });
-  }
-
-  // ✅ Guardrail 6 (ANTI “FAIXA”): pega a cor real do fundo do PNG automaticamente
-  // (evita ajuste manual de --content-bg e qualquer diferença de tom)
-  function autoBackgroundFromImage(img){
-    if (!img) return;
-
-    const apply = () => {
-      try{
-        const w = img.naturalWidth || 0;
-        const h = img.naturalHeight || 0;
-        if (!w || !h) return;
-
-        const canvas = document.createElement('canvas');
-        const ctx = canvas.getContext('2d', { willReadFrequently: true });
-        canvas.width = w;
-        canvas.height = h;
-        ctx.drawImage(img, 0, 0);
-
-        // amostra um “patch” no meio-direita (normalmente só fundo, sem textos/elementos)
-        const x1 = Math.max(0, w - 40);
-        const y1 = Math.max(0, Math.floor(h/2) - 20);
-        const sw = Math.min(30, w - x1);
-        const sh = Math.min(40, h - y1);
-
-        const data = ctx.getImageData(x1, y1, sw, sh).data;
-
-        let r=0,g=0,b=0,c=0;
-        for (let i=0;i<data.length;i+=4){
-          const a = data[i+3];
-          if (a < 10) continue;
-          r += data[i];
-          g += data[i+1];
-          b += data[i+2];
-          c++;
-        }
-        if (!c) return;
-
-        r = Math.round(r/c);
-        g = Math.round(g/c);
-        b = Math.round(b/c);
-
-        document.documentElement.style.setProperty('--content-bg', `rgb(${r},${g},${b})`);
-      }catch(e){
-        // se o browser bloquear por algum motivo, mantém o fallback do CSS
-      }
-    };
-
-    // garante que a imagem está decodificada antes de ler pixels
-    if (img.complete && img.naturalWidth) {
-      apply();
-      return;
-    }
-
-    img.addEventListener('load', apply, { once:true });
-  }
-
-  // Init
-  wireSubmenus();
-  bindToggles();
-  normalizeBlankLinks();
-  bindSearch();
-
-  const hero = $('.hero');
-  const img  = $('.hero img');
-
-  heroImageFallback(img, hero);
-  autoBackgroundFromImage(img);
-})();
-</script>
-
 </body>
 </html>
